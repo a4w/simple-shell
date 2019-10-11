@@ -31,7 +31,7 @@ public class Main{
                         System.err.println("Command not found");
                         break;
                     default:
-                        System.out.println("Something wrong happened");
+                        System.err.println("Something wrong happened");
                         break;
                 }
                 if(exec.output != null)
