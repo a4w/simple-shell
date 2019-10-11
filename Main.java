@@ -25,7 +25,7 @@ public class Main{
                         System.err.println("Error occurred");
                         break;
                     case INVALID_ARGUMENTS:
-                        System.err.println("Invalid number of arguments supplied");
+                        System.err.println("Invalid number of arguments supplied!!");
                         break;
                     case COMMAND_NOT_FOUND:
                         System.err.println("Command not found");
