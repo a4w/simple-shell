@@ -13,6 +13,7 @@ public class Main{
             Terminal.Execution exec = term.run(cmd);
 
             if(exec == null){
+                System.out.println("Exiting...");
                 running = false;
                 continue;
             }
