@@ -1,12 +1,12 @@
+
 public class Terminal{
     final static String _home = System.getProperty("user.dir");
     private String dir;
 
-    enum ExitCode{
-        SUCCESS, ERROR, COMMAND_NOT_FOUND, INVALID_ARGUMENT, TERMINATE
-    };
-
-    class Return{
+    static class Execution{
+        enum ExitCode{
+            SUCCESS, ERROR, COMMAND_NOT_FOUND, INVALID_ARGUMENTS
+        };
         String output;
         ExitCode exit_code;
     };
@@ -16,39 +16,28 @@ public class Terminal{
         this.dir = _home;
     }
 
-    Return run(String cmd){
-        Return r = new Return();
-        r.exit_code = ExitCode.SUCCESS;
-
+    Execution run(String cmd){
         Parser parser = new Parser();
-
-        try{
-            // Attempt to parse command
-            parser.parse(cmd);
-        }catch(Exception e){
-            r.exit_code = ExitCode.COMMAND_NOT_FOUND;
-            return r;
-        }
-
+        Execution exec = new Execution();
+        parser.parse(cmd);
+        // Inside each case, validate arguments, if no match, return ExitCode.INVALID_ARGUMENTS and any extra errors in output else return execution
         switch(parser.getCommand()){
-            default:
-                r.exit_code = ExitCode.ERROR;
-                break;
             case EXIT:
-                System.out.println("Bye");
-                r.exit_code = ExitCode.TERMINATE;
-                break;
-            case COPY:
-                // TODO: Implement cp
-                break;
+                return null; // Special case to end program
             case PWD:
-                r.output = this.pwd();
+                exec = this.pwd();
+                break;
+            default:
+                exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
                 break;
         }
-        return r;
+        return exec;
     }
 
-    String pwd(){
-        return this.dir + '\n';
+    Execution pwd(){
+        Execution exec = new Execution();
+        exec.exit_code = Execution.ExitCode.SUCCESS;
+        exec.output = this.dir + '\n';
+        return exec;
     }
 };

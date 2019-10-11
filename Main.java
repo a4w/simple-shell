@@ -1,6 +1,5 @@
 import java.util.Scanner;
 
-
 public class Main{
     public static void main(String args[]){
         Scanner reader = new Scanner(System.in);
@@ -11,15 +10,17 @@ public class Main{
             System.out.print("➜ ");
             String cmd = reader.nextLine();
 
-            Terminal.Return execution = term.run(cmd);
+            Terminal.Execution exec = term.run(cmd);
 
-            if(execution.exit_code == Terminal.ExitCode.TERMINATE)
+            if(exec == null){
                 running = false;
+                continue;
+            }
 
-            if(execution.exit_code == Terminal.ExitCode.SUCCESS)
-                System.out.print(execution.output);
+            if(exec.exit_code == Terminal.Execution.ExitCode.SUCCESS)
+                System.out.print(exec.output);
             else
-                System.err.print(execution.output);
+                System.err.print(exec.output);
         }
         reader.close();
     }

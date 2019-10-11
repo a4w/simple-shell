@@ -1,6 +1,6 @@
 public class Parser{
     public enum Command{
-        NONE, EXIT, COPY, MOVE, MKDIR, PWD // TODO Other methods
+        NONE, EXIT, COPY, MOVE, MKDIR, PWD
     };
 
     private Command cmd;
