@@ -1,4 +1,4 @@
-import java.util.Scanner;
+﻿import java.util.Scanner;
 
 public class Main{
     public static void main(String args[]){
@@ -16,6 +16,7 @@ public class Main{
                 System.out.println("Exiting...");
                 running = false;
                 continue;
+
             }
 
             if(exec.exit_code == Terminal.Execution.ExitCode.SUCCESS)
