@@ -5,7 +5,7 @@ public class Terminal{
 
     static class Execution{
         enum ExitCode{
-            SUCCESS, ERROR, COMMAND_NOT_FOUND, INVALID_ARGUMENTS
+            SUCCESS, ERROR, COMMAND_NOT_FOUND, INVALID_ARGUMENTS, SYNTAX_ERROR
         };
         String output;
         ExitCode exit_code;
@@ -19,13 +19,16 @@ public class Terminal{
     Execution run(String cmd){
         Parser parser = new Parser();
         Execution exec = new Execution();
-        parser.parse(cmd);
+        if(!parser.parse(cmd)){
+            exec.exit_code = Execution.ExitCode.SYNTAX_ERROR;
+            return exec;
+        }
         // Inside each case, validate arguments, if no match, return ExitCode.INVALID_ARGUMENTS and any extra errors in output else return execution
         switch(parser.getCommand()){
             case EXIT:
                 exec = null; // Special case to end program
                 break;
-            case PWD:
+            case PRINT_WORKING_DIR:
                 exec = this.pwd();
                 break;
             default:

@@ -31,6 +31,9 @@ public class Main{
                     case COMMAND_NOT_FOUND:
                         System.err.println("Command not found");
                         break;
+                    case SYNTAX_ERROR:
+                        System.err.println("Input is not recognized");
+                        break;
                     default:
                         System.err.println("Something wrong happened");
                         break;
