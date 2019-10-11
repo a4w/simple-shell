@@ -1,6 +1,8 @@
+import java.io.File;
+import java.nio.file.Path;
 
 public class Terminal{
-    final static String _home = System.getProperty("user.dir");
+    final static String _home = System.getProperty("user.dir") + '/';
     private String dir;
 
     static class Execution{
@@ -14,6 +16,15 @@ public class Terminal{
     Terminal(){
         // Set home to shell location
         this.dir = _home;
+    }
+
+    String expandPath(String path){
+        File file = new File(path);
+        if(file.isAbsolute()){
+            return path;
+        }else{
+            return this.dir + path;
+        }
     }
 
     Execution run(String cmd){
