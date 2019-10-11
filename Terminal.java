@@ -23,7 +23,8 @@ public class Terminal{
         // Inside each case, validate arguments, if no match, return ExitCode.INVALID_ARGUMENTS and any extra errors in output else return execution
         switch(parser.getCommand()){
             case EXIT:
-                return null; // Special case to end program
+                exec = null; // Special case to end program
+                break;
             case PWD:
                 exec = this.pwd();
                 break;

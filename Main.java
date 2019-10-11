@@ -19,8 +19,24 @@ public class Main{
 
             if(exec.exit_code == Terminal.Execution.ExitCode.SUCCESS)
                 System.out.print(exec.output);
-            else
-                System.err.print(exec.output);
+            else{
+                switch(exec.exit_code){
+                    case ERROR:
+                        System.err.println("Error occurred");
+                        break;
+                    case INVALID_ARGUMENTS:
+                        System.err.println("Invalid number of arguments supplied");
+                        break;
+                    case COMMAND_NOT_FOUND:
+                        System.err.println("Command not found");
+                        break;
+                    default:
+                        System.out.println("Something wrong happened");
+                        break;
+                }
+                if(exec.output != null)
+                    System.err.print(exec.output);
+            }
         }
         reader.close();
     }

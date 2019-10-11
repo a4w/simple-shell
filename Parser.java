@@ -12,8 +12,8 @@ public class Parser{
     }
 
     public boolean parse(String input){
-        this.cmd = Command.PWD;
-        return true;
+        // this.cmd = Command.NONE;
+        return false;
     }
 
     public Command getCommand(){
