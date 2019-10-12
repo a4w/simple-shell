@@ -32,7 +32,7 @@ public class Terminal{
         return p.normalize().toAbsolutePath().toString();
     }
 
-    Execution run(String cmd, String stdin) throws IOException{
+    Execution run(String cmd, String stdin){
         Parser parser = new Parser();
         Execution exec = new Execution();
         if(!parser.parse(cmd)){
@@ -77,21 +77,21 @@ public class Terminal{
                 }
                 break;
             case COPY:
-            	if(args.length == 2){
-            		exec = this.cp(args[0], args[1]);
-            	}else{
-            		exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
-            	}
-            	break;
+                if(args.length == 2){
+                    exec = this.cp(args[0], args[1]);
+                }else{
+                    exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+                }
+                break;
             case MOVE:
-            	if(args.length == 2){
-            		exec = this.mv(args[0], args[1]);
-            	}else{
-            		exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
-            	}
-            	break;
+                if(args.length == 2){
+                    exec = this.mv(args[0], args[1]);
+                }else{
+                    exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+                }
+                break;
             case CLEAR_SCREEN:
-            	exec = this.clear();
+                exec = this.clear();
                 break;
             case DELETE_FILE:
             	if(args.length == 0){
@@ -168,63 +168,54 @@ public class Terminal{
         }
         return exec;
     }
-    Execution cp(String oldPath, String newPath) throws IOException {
-    	Execution exec = new Execution ();
-    	int lastIndex = newPath.lastIndexOf('/');
-    	FileInputStream copyFile;
-		FileOutputStream pasteFile;
-    	String pasteFileName = newPath.substring(lastIndex + 1);
-    	newPath = newPath.substring(0, lastIndex+1);
-
-		if(lastIndex == newPath.length() ) {
-			exec.output = "Please Provide a Valid File name\n";
-			exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-		}else if(Paths.get(expandPath(oldPath)).toFile().isFile() 
-				&& Paths.get(expandPath(newPath)).toFile().isDirectory()){
-			
-			copyFile = new FileInputStream(oldPath);
-			pasteFile = new FileOutputStream(newPath + pasteFileName);
-	        byte[] buffer = new byte[1024];
-	        int length;
-	        
-	        while ((length = copyFile.read(buffer)) > 0) {
-	            pasteFile.write(buffer, 0, length);
-	        }
-	        
-			exec.exit_code = Execution.ExitCode.SUCCESS;
-			exec.output = "File Copied successfully";
-		}else{
-			exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-			exec.output = "Path specified is not a valid directory\n";
-		}
-		
-    	  return exec;
-    	
+    Execution cp(String oldPath, String newPath){
+        Execution exec = new Execution ();
+        int lastIndex = newPath.lastIndexOf('/');
+        FileInputStream copyFile;
+        FileOutputStream pasteFile;
+        String pasteFileName = newPath.substring(lastIndex + 1);
+        newPath = newPath.substring(0, lastIndex+1);
+        if(lastIndex == newPath.length() ) {
+            exec.output = "Please Provide a Valid File name\n";
+            exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+        }else if(Paths.get(expandPath(oldPath)).toFile().isFile() && Paths.get(expandPath(newPath)).toFile().isDirectory()){
+            try{
+                copyFile = new FileInputStream(expandPath(oldPath));
+                pasteFile = new FileOutputStream(expandPath(newPath + pasteFileName));
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = copyFile.read(buffer)) > 0) {
+                    pasteFile.write(buffer, 0, length);
+                }
+                exec.exit_code = Execution.ExitCode.SUCCESS;
+                exec.output = "File Copied successfully\n";
+            }catch(IOException e){
+                exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+            }
+        }else{
+            exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+            exec.output = "Path specified is not a valid directory\n";
+        }
+        return exec;
     }
-    
-    Execution mv(String oldPath, String newPath) throws IOException {
-    	Execution exec = this.cp(oldPath, newPath);
-    	File file = new File(oldPath); 
-        
-        if(file.delete()) 
-        { 
-            exec.output = ("File deleted successfully"); 
+
+    Execution mv(String oldPath, String newPath){
+        Execution exec = this.cp(oldPath, newPath);
+        File file = new File(expandPath(oldPath));
+        if(file.delete()) {
+            exec.output = "File moved successfully\n";
             exec.exit_code = Execution.ExitCode.SUCCESS;
-        } 
-        else
-        { 
-        	exec.output = ("Failed to delete the file"); 
-        	exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-        } 
-		return exec;
-    	
+        } else {
+            exec.output = "Failed to move the file\n";
+            exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+        }
+        return exec;
     }
     Execution clear() {
-    	Execution exec = new Execution();
-            exec.exit_code = Execution.ExitCode.SUCCESS;
-            exec.output =  "\033["+ "2J"; 
-		return exec;
-    	
+        Execution exec = new Execution();
+        exec.exit_code = Execution.ExitCode.SUCCESS;
+        exec.output = new String(new char[1000]).replace('\0', '\n');;
+        return exec;
     }
     @SuppressWarnings("unused")
 	Execution rm(String path) {
