@@ -8,7 +8,7 @@ public class Terminal{
 
     static class Execution{
         enum ExitCode{
-            SUCCESS, ERROR, COMMAND_NOT_FOUND, INVALID_ARGUMENTS, SYNTAX_ERROR
+            SUCCESS, ERROR, COMMAND_NOT_FOUND, INVALID_ARGUMENTS, SYNTAX_ERROR, READ_WRITE_ERROR
         };
         String output;
         ExitCode exit_code;
@@ -44,9 +44,21 @@ public class Terminal{
             case EXIT:
                 exec = null; // Special case to end program
                 break;
+
             case PRINT_WORKING_DIR:
                 exec = this.pwd();
                 break;
+
+            case CHANGE_DIR:
+                if(args.length == 0){
+                    exec = this.cd(_home);
+                }else if(args.length == 1){
+                    exec = this.cd(args[0]);
+                }else{
+                    exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+                }
+                break;
+
             default:
                 exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
                 break;
@@ -58,6 +70,18 @@ public class Terminal{
         Execution exec = new Execution();
         exec.exit_code = Execution.ExitCode.SUCCESS;
         exec.output = getCurrentDir() + '\n';
+        return exec;
+    }
+
+    Execution cd(String path){
+        Execution exec = new Execution();
+        if(Paths.get(expandPath(path)).toFile().isDirectory()){
+            exec.exit_code = Execution.ExitCode.SUCCESS;
+            this.dir = Paths.get(expandPath(path));
+        }else{
+            exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+            exec.output = "Path specified is not a valid directory\n";
+        }
         return exec;
     }
 };

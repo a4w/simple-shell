@@ -35,6 +35,9 @@ public class Main{
                     case SYNTAX_ERROR:
                         System.err.println("Input is not recognized");
                         break;
+                    case READ_WRITE_ERROR:
+                        System.err.println("File I/O Error");
+                        break;
                     default:
                         System.err.println("Something wrong happened");
                         break;
