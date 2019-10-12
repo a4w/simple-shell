@@ -2,13 +2,13 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Main{
-    public static void main(String args[]) throws IOException{
+    public static void main(String args[]){
         Scanner reader = new Scanner(System.in);
         boolean running = true;
         Terminal term = new Terminal();
         while(running){
             // Read command from standard input
-            System.out.print("$$");
+            System.out.print("$ ");
             String cmd = reader.nextLine();
 
             Terminal.Execution exec = term.run(cmd, null);
@@ -21,7 +21,7 @@ public class Main{
 
             if(exec.exit_code == Terminal.Execution.ExitCode.SUCCESS){
                 if(exec.output != null)
-                    System.out.print(exec.output);  
+                    System.out.print(exec.output);
             }else{
                 switch(exec.exit_code){
                     case ERROR:
