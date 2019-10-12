@@ -10,7 +10,7 @@ public class Main{
             System.out.print("➜ ");
             String cmd = reader.nextLine();
 
-            Terminal.Execution exec = term.run(cmd);
+            Terminal.Execution exec = term.run(cmd, null);
 
             if(exec == null){
                 System.out.println("Exiting...");

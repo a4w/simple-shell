@@ -1,6 +1,10 @@
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 public class Terminal{
     final static String _home = System.getProperty("user.dir") + '/';
@@ -31,7 +35,7 @@ public class Terminal{
         return p.normalize().toAbsolutePath().toString();
     }
 
-    Execution run(String cmd){
+    Execution run(String cmd, String stdin){
         Parser parser = new Parser();
         Execution exec = new Execution();
         if(!parser.parse(cmd)){
@@ -59,6 +63,10 @@ public class Terminal{
                 }
                 break;
 
+            case MORE:
+                exec = this.more(args, stdin);
+                break;
+
             default:
                 exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
                 break;
@@ -81,6 +89,30 @@ public class Terminal{
         }else{
             exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
             exec.output = "Path specified is not a valid directory\n";
+        }
+        return exec;
+    }
+
+    Execution more(String[] files, String stdin){
+        final String bufferSeparator = "\n*********************************************\n*********************EOF*********************\n*********************************************\n\n\n";
+        Execution exec = new Execution();
+        exec.exit_code = Execution.ExitCode.SUCCESS;
+        // Show stdin, then files one by one
+        exec.output = stdin == null ? "" : stdin + bufferSeparator;
+        for(int i = 0; i < files.length; ++i){
+            Path f = Paths.get(expandPath(files[i]));
+            if(!f.toFile().exists() || !f.toFile().isFile()){
+                exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+                exec.output = "Arguments specified are not readable files\n";
+                break;
+            }
+            try{
+                exec.output += new String(Files.readAllBytes(f));
+                exec.output += bufferSeparator;
+            }catch(IOException e){
+                exec.exit_code = Execution.ExitCode.ERROR;
+                break;
+            }
         }
         return exec;
     }
