@@ -91,7 +91,7 @@ public class Terminal{
             	}
             	break;
             case CLEAR_SCREEN:
-            	this.clear();
+            	exec = this.clear();
                 break;
             default:
                 exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
