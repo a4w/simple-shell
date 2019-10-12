@@ -71,13 +71,14 @@ public class Terminal{
                 }
                 break;
             case LIST_DIR:
-            	if(args.length == 0){
-                    exec = this.ls(_home);
+                if(args.length == 0){
+                    exec = this.ls(getCurrentDir());
                 }else if(args.length == 1){
                     exec = this.ls(args[0]);
                 }else{
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 }
+                break;
             default:
                 exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
                 break;
@@ -128,21 +129,20 @@ public class Terminal{
         return exec;
     }
     Execution ls(String path) {
-    	Execution exec = new Execution ();
-    	
-    	if(Paths.get(expandPath(path)).toFile().isDirectory()){
+        Execution exec = new Execution ();
+        if(Paths.get(expandPath(path)).toFile().isDirectory()){
             exec.exit_code = Execution.ExitCode.SUCCESS;
-            final File folder = new File(path);
-        	File[] listOfFiles = folder.listFiles();
-        	for(int i = 0; i < listOfFiles.length; ++i) {
-        		exec.output = exec.output + (listOfFiles[i].getName()) + '\n';
-        	}
+            final File folder = new File(expandPath(path));
+            File[] listOfFiles = folder.listFiles();
+            exec.output = "";
+            for(int i = 0; i < listOfFiles.length; ++i) {
+                exec.output += listOfFiles[i].getName()+ '\n';
+            }
+            exec.output += '\n';
         }else{
             exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
             exec.output = "Path specified is not a valid directory\n";
         }
-    	
-    	  return exec;
-    	
+        return exec;
     }
 };
