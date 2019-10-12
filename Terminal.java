@@ -64,7 +64,11 @@ public class Terminal{
                 break;
 
             case MORE:
-                exec = this.more(args, stdin);
+                if(stdin == null && args.length == 0){
+                    exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+                }else{
+                    exec = this.more(args, stdin);
+                }
                 break;
 
             default:
@@ -94,7 +98,7 @@ public class Terminal{
     }
 
     Execution more(String[] files, String stdin){
-        final String bufferSeparator = "\n*********************************************\n*********************EOF*********************\n*********************************************\n\n\n";
+        final String bufferSeparator = "\n*********************************************\n*********************EOF*********************\n*********************************************\n\n";
         Execution exec = new Execution();
         exec.exit_code = Execution.ExitCode.SUCCESS;
         // Show stdin, then files one by one
