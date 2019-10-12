@@ -18,9 +18,10 @@ public class Main{
                 continue;
             }
 
-            if(exec.exit_code == Terminal.Execution.ExitCode.SUCCESS)
-                System.out.print(exec.output);
-            else{
+            if(exec.exit_code == Terminal.Execution.ExitCode.SUCCESS){
+                if(exec.output != null)
+                    System.out.print(exec.output);  
+            }else{
                 switch(exec.exit_code){
                     case ERROR:
                         System.err.println("Error occurred");

@@ -1,9 +1,10 @@
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Terminal{
     final static String _home = System.getProperty("user.dir") + '/';
-    private String dir;
+    private Path dir;
 
     static class Execution{
         enum ExitCode{
@@ -15,16 +16,19 @@ public class Terminal{
 
     Terminal(){
         // Set home to shell location
-        this.dir = _home;
+        this.dir = Paths.get(_home);
+    }
+
+    String getCurrentDir(){
+        return this.dir.toString();
     }
 
     String expandPath(String path){
-        File file = new File(path);
-        if(file.isAbsolute()){
-            return path;
-        }else{
-            return this.dir + path;
+        Path p = Paths.get(path);
+        if(!p.isAbsolute()){
+            p = Paths.get(getCurrentDir() + File.separatorChar + path);
         }
+        return p.normalize().toAbsolutePath().toString();
     }
 
     Execution run(String cmd){
@@ -35,6 +39,7 @@ public class Terminal{
             return exec;
         }
         // Inside each case, validate arguments, if no match, return ExitCode.INVALID_ARGUMENTS and any extra errors in output else return execution
+        String[] args = parser.getArguments();
         switch(parser.getCommand()){
             case EXIT:
                 exec = null; // Special case to end program
@@ -52,7 +57,7 @@ public class Terminal{
     Execution pwd(){
         Execution exec = new Execution();
         exec.exit_code = Execution.ExitCode.SUCCESS;
-        exec.output = this.dir + '\n';
+        exec.output = getCurrentDir() + '\n';
         return exec;
     }
 };
