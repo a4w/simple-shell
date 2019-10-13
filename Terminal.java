@@ -93,6 +93,15 @@ public class Terminal{
             case CLEAR_SCREEN:
                 exec = this.clear();
                 break;
+            case DELETE_FILE:
+            	if(args.length == 0){
+                    exec = this.rm(getCurrentDir());
+                }else if(args.length == 1){
+                    exec = this.rm(args[0]);
+                }else{
+                    exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+                }
+                break;
             default:
                 exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
                 break;
@@ -206,6 +215,28 @@ public class Terminal{
         Execution exec = new Execution();
         exec.exit_code = Execution.ExitCode.SUCCESS;
         exec.output = new String(new char[1000]).replace('\0', '\n');;
+        return exec;
+    }
+    @SuppressWarnings("unused")
+	Execution rm(String path) {
+    	Execution exec = new Execution();
+    	if(Paths.get(expandPath(path)).toFile().isDirectory()){
+    		final File folder = new File(expandPath(path));
+    		if(folder != null){
+    			exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+                exec.output = folder.getName() + " can't be removed\n";
+    		}
+    		else{
+	            exec.exit_code = Execution.ExitCode.SUCCESS;
+	            exec.output = "";
+	            exec.output += folder.getName() + " was removed successfully\n";
+	            folder.delete();
+    		}
+        }
+    	else{
+            exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+            exec.output = "Path specified is not a valid directory\n";
+        }
         return exec;
     }
 };
