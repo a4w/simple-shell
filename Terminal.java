@@ -2,6 +2,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Terminal{
     final static String _home = System.getProperty("user.dir") + File.separatorChar;
@@ -102,6 +104,12 @@ public class Terminal{
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 }
                 break;
+            case PRINT_DATE:
+            	if(args.length != 0)
+            		exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+            	else
+            		exec = date();
+            	break;
             default:
                 exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
                 break;
@@ -250,5 +258,13 @@ public class Terminal{
             exec.output = "Path specified is not a valid directory\n";
         }
         return exec;
+    }
+    Execution date() {
+    	Execution exec = new Execution();
+    	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+    	LocalDateTime now = LocalDateTime.now();  
+		exec.output = dtf.format(now);
+		exec.exit_code = Execution.ExitCode.SUCCESS;
+		return exec;
     }
 };
