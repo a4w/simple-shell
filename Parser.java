@@ -20,11 +20,10 @@ public class Parser{
          */
         // Partition command into words
         int pipe = -1, oredirect = Integer.MAX_VALUE, aredirect = Integer.MAX_VALUE;
-        input += '.'; // Used to prevent out of bounds
         ArrayList<String> parts = new ArrayList<String>();
         String current = "";
         Character escape = null;
-        for(int i = 0; i < input.length() - 1; ++i){
+        for(int i = 0; i < input.length(); ++i){
             // Handle quoted partitions
             if(input.charAt(i) == '\'' || input.charAt(i) == '"'){
                 if(escape != null && input.charAt(i) == escape){
@@ -47,7 +46,7 @@ public class Parser{
                     pipe = i;
                     break;
                 }else if(input.charAt(i) == '>'){
-                    if(input.charAt(i+1) == '>')
+                    if(i < input.length() - 1 && input.charAt(i+1) == '>')
                         aredirect = i;
                     else
                         oredirect = i;
@@ -63,19 +62,19 @@ public class Parser{
         if(pipe != -1){
             this.args = new String[2];
             this.args[0] = input.substring(0, pipe);
-            this.args[1] = input.substring(pipe+1, input.length() - 1);
+            this.args[1] = input.substring(pipe+1);
             this.cmd = Command.PIPE;
         }else if(oredirect != Integer.MAX_VALUE || aredirect != Integer.MAX_VALUE){
             // Precendence left to right
             if(oredirect < aredirect){
                 this.args = new String[2];
                 this.args[0] = input.substring(0, oredirect);
-                this.args[1] = input.substring(oredirect+1, input.length() - 1);
+                this.args[1] = input.substring(oredirect+1);
                 this.cmd = Command.OUTPUT_REDIRECT;
             }else if(aredirect < oredirect){
                 this.args = new String[2];
                 this.args[0] = input.substring(0, aredirect);
-                this.args[1] = input.substring(aredirect+2, input.length() - 1);
+                this.args[1] = input.substring(aredirect+2);
                 this.cmd = Command.OUTPUT_REDIRECT_APPEND;
             }
         }else{
