@@ -170,27 +170,43 @@ public class Terminal{
     }
     Execution cp(String oldPath, String newPath){
         Execution exec = new Execution ();
-        int lastIndex = newPath.lastIndexOf(File.separatorChar);
-        FileInputStream copyFile;
-        FileOutputStream pasteFile;
-        String pasteFileName = newPath.substring(lastIndex + 1);
-        newPath = newPath.substring(0, lastIndex+1);
-        if(lastIndex == newPath.length() ) {
-            exec.output = "Please Provide a Valid File name\n";
-            exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+        
+        File src = new File(oldPath);
+        File dist;
+                
+        if(newPath.charAt(newPath.length() - 1) == File.separatorChar ) {
+        	///copy file to newPath with the same name
+        	dist = new File(newPath + src.getName());
+        	try {
+				dist.createNewFile();
+			} catch (IOException e) {
+				exec.output = "Please Provide a Valid File Directory\n";
+				exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+				
+			}
         }else if(Paths.get(expandPath(oldPath)).toFile().isFile() 
         		&& Paths.get(expandPath(newPath)).toFile().isDirectory()){
+        	
             try{
-                copyFile = new FileInputStream(expandPath(oldPath));
-                pasteFile = new FileOutputStream(expandPath(newPath + pasteFileName));
+            	dist = new File(newPath);
+            	dist.createNewFile();
+            	
+            	FileInputStream copyFile = new FileInputStream(expandPath(oldPath));
+            	FileOutputStream pasteFile = new FileOutputStream(dist.getAbsolutePath());
+            	
                 byte[] buffer = new byte[1024];
                 int length;
+                
                 while ((length = copyFile.read(buffer)) > 0) {
                     pasteFile.write(buffer, 0, length);
                 }
                 exec.exit_code = Execution.ExitCode.SUCCESS;
                 exec.output = "File Copied successfully\n";
+                
+                copyFile.close();
+                pasteFile.close();
             }catch(IOException e){
+            	exec.output = "Please Provide a Valid File name\n";
                 exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
             }
         }else{
@@ -202,6 +218,7 @@ public class Terminal{
 
     Execution mv(String oldPath, String newPath){
         Execution exec = this.cp(oldPath, newPath);
+        if(exec.exit_code.equals(Execution.ExitCode.READ_WRITE_ERROR)) return exec;
         File file = new File(expandPath(oldPath));
         if(file.delete()) {
             exec.output = "File moved successfully\n";
@@ -218,7 +235,6 @@ public class Terminal{
         exec.output = new String(new char[1000]).replace('\0', '\n');;
         return exec;
     }
-    @SuppressWarnings("unused")
     Execution rm(String path) {
         Execution exec = new Execution();
         if(Paths.get(expandPath(path)).toFile().isFile()){
