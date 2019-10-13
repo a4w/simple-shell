@@ -263,7 +263,7 @@ public class Terminal{
     	Execution exec = new Execution();
     	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
     	LocalDateTime now = LocalDateTime.now();  
-		exec.output = dtf.format(now);
+		exec.output = dtf.format(now) + '\n';
 		exec.exit_code = Execution.ExitCode.SUCCESS;
 		return exec;
     }
