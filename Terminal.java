@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Terminal{
-    final static String _home = System.getProperty("user.dir") + '/';
+    final static String _home = System.getProperty("user.dir") + File.separatorChar;
     private Path dir;
 
     static class Execution{
@@ -170,7 +170,7 @@ public class Terminal{
     }
     Execution cp(String oldPath, String newPath){
         Execution exec = new Execution ();
-        int lastIndex = newPath.lastIndexOf('/');
+        int lastIndex = newPath.lastIndexOf(File.separatorChar);
         FileInputStream copyFile;
         FileOutputStream pasteFile;
         String pasteFileName = newPath.substring(lastIndex + 1);
@@ -178,7 +178,8 @@ public class Terminal{
         if(lastIndex == newPath.length() ) {
             exec.output = "Please Provide a Valid File name\n";
             exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-        }else if(Paths.get(expandPath(oldPath)).toFile().isFile() && Paths.get(expandPath(newPath)).toFile().isDirectory()){
+        }else if(Paths.get(expandPath(oldPath)).toFile().isFile() 
+        		&& Paths.get(expandPath(newPath)).toFile().isDirectory()){
             try{
                 copyFile = new FileInputStream(expandPath(oldPath));
                 pasteFile = new FileOutputStream(expandPath(newPath + pasteFileName));
@@ -220,18 +221,13 @@ public class Terminal{
     @SuppressWarnings("unused")
     Execution rm(String path) {
         Execution exec = new Execution();
-        if(Paths.get(expandPath(path)).toFile().isDirectory()){
+        if(Paths.get(expandPath(path)).toFile().isFile()){
             final File folder = new File(expandPath(path));
-            if(folder != null){
-                exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-                exec.output = folder.getName() + " can't be removed\n";
-            }
-            else{
+            
                 exec.exit_code = Execution.ExitCode.SUCCESS;
                 exec.output = "";
                 exec.output += folder.getName() + " was removed successfully\n";
                 folder.delete();
-            }
         }
         else{
             exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
