@@ -107,6 +107,12 @@ public class Terminal{
             	else
             		exec = date();
             	break;
+            case DELETE_DIR:
+            	if(args.length == 1)
+                    exec = this.rmdir(args[0]);
+                else
+                    exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+                break;
             default:
                 exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
                 break;
@@ -262,5 +268,39 @@ public class Terminal{
 		exec.output = dtf.format(now) + '\n';
 		exec.exit_code = Execution.ExitCode.SUCCESS;
 		return exec;
+    }
+    Execution rmdir(String path) {
+    	Execution exec = new Execution();
+    	if(Paths.get(expandPath(path)).toFile().isDirectory()) {
+    		final File directory = new File(expandPath(path));
+    		try{
+    			delete(directory);
+    			exec.exit_code = Execution.ExitCode.SUCCESS;
+    			exec.output = "";
+    			exec.output += directory.getName() + " was removed Successfully.";
+    		}
+    		catch(IOException e){
+    			exec.exit_code = Execution.ExitCode.ERROR;
+    			exec.output = "Directory can't be removed.\n";
+    		}
+    	}
+    	else {
+    		exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+            exec.output = "Path specified is not a valid directory.\n";
+    	}
+    	return exec;
+    }
+    public static void delete(File directory) throws IOException{
+    	if(directory.isDirectory()) {
+    		File[] files = directory.listFiles();
+   			for(File file : files)
+    			delete(file);
+   			directory.delete();
+   		}
+   		else if(directory.isFile()) {
+   			directory.delete();
+   		}
+    	else
+    		throw new IOException("error");
     }
 };
