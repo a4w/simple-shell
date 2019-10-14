@@ -96,13 +96,10 @@ public class Terminal{
                 exec = this.clear();
                 break;
             case DELETE_FILE:
-                if(args.length == 0){
-                    exec = this.rm(getCurrentDir());
-                }else if(args.length == 1){
+                if(args.length == 1)
                     exec = this.rm(args[0]);
-                }else{
+                else
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
-                }
                 break;
             case PRINT_DATE:
             	if(args.length != 0)
@@ -246,16 +243,15 @@ public class Terminal{
     Execution rm(String path) {
         Execution exec = new Execution();
         if(Paths.get(expandPath(path)).toFile().isFile()){
-            final File folder = new File(expandPath(path));
-            
-                exec.exit_code = Execution.ExitCode.SUCCESS;
-                exec.output = "";
-                exec.output += folder.getName() + " was removed successfully\n";
-                folder.delete();
+            final File file = new File(expandPath(path));
+            exec.exit_code = Execution.ExitCode.SUCCESS;
+            exec.output = "";
+            exec.output += file.getName() + " was removed successfully.\n";
+            file.delete();
         }
         else{
             exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-            exec.output = "Path specified is not a valid directory\n";
+            exec.output = "Path specified is not a valid file.\n";
         }
         return exec;
     }
