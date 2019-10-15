@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public class Terminal{
     final static String _home = System.getProperty("user.dir") + File.separatorChar;
@@ -110,6 +111,18 @@ public class Terminal{
             case DELETE_DIR:
             	if(args.length == 1)
                     exec = this.rmdir(args[0]);
+                else
+                    exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+                break;
+            /*case CREATE_DIR:
+            	if(args.length == 1)
+            		exec = this.mkdir(args[0]);
+            	else
+            		exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+            	break;*/
+            case PRINT_HELP:
+            	if(args.length == 1)
+                    exec = this.help(args[0]);
                 else
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 break;
@@ -302,5 +315,59 @@ public class Terminal{
    		}
     	else
     		throw new IOException("error");
+    }
+    
+    Execution help(String command) {
+    	Execution exec = new Execution();
+    	switch(command) {
+    	case "cd":
+    		exec.output = command + " is used to change the current directory.";
+    		break;
+    	case "ls":
+    		exec.output = command + " is used to list information about the files in the current directory.";
+    		break;
+    	case "cp":
+    		exec.output = command + " is used to copy source to destination, or multiple sources to directory.";
+    		break;
+    	case "cat":
+    		exec.output = command + " is used to concatenate files and print on the standard output.";
+    		break;
+    	case "more":
+    		exec.output = command + " is used to view file or standard input one screenful at a time.";
+    		break;
+    	case "mkdir":
+    		exec.output = command + " allows the user to create directories.";
+    		break;
+    	case "rmdir":
+    		exec.output = command + " removes the directory if it is empty.";
+    		break;
+    	case "mv":
+    		exec.output = command + " is used to move or rename files.";
+    		break;
+    	case "rm":
+    		exec.output = command + " removes files or directories.";
+    		break;
+    	case "args":
+    		exec.output = command + " reads streams of data from standard input, then generates and executes command lines.";
+    		break;
+    	case "date":
+    		exec.output = command + " is used to display or set time.";
+    		break;
+    	case "help":
+    		exec.output = command + " displays what a command does.";
+    		break;
+    	case "pwd":
+    		exec.output = command + " is used to print name of current directory.";
+    		break;
+    	case "clear":
+    		exec.output = command + " clears the terminal screen.";
+    		break;
+    	default:
+    		exec.exit_code = Execution.ExitCode.ERROR;
+    		exec.output = "Command doesn't exist.";
+    		return exec;
+    	}
+    	exec.exit_code = Execution.ExitCode.SUCCESS;
+    	return exec;
     }
 };
