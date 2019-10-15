@@ -114,12 +114,12 @@ public class Terminal{
                 else
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 break;
-            /*case CREATE_DIR:
+            case CREATE_DIR:
             	if(args.length == 1)
             		exec = this.mkdir(args[0]);
             	else
             		exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
-            	break;*/
+            	break;
             case PRINT_HELP:
             	if(args.length == 1)
                     exec = this.help(args[0]);
@@ -316,7 +316,37 @@ public class Terminal{
     	else
     		throw new IOException("error");
     }
-    
+    Execution mkdir(String path) {
+		Execution exec = new Execution();
+		final File directory = new File(expandPath(path));
+		if(Paths.get(expandPath(path)).toFile().isDirectory()) {
+			exec.exit_code = Execution.ExitCode.ERROR;
+			exec.output = "";
+			exec.output += directory.getName() + " already exists.\n";
+		}
+		else {
+			String src = path;
+			int len = 0;
+			String folder = "";
+			ArrayList<String> directories = new ArrayList<String>();
+			while(!Paths.get(expandPath(src)).toFile().isDirectory() && src.length() != 0) {
+				folder = Paths.get(expandPath(src)).toFile().getName();
+				len += folder.length() + 1;
+				directories.add(folder);
+				src = "";
+	    		for(int i = 0 ; i < path.length() - len ; i++)
+	    			src += path.charAt(i);
+			}
+			for(int i = directories.size() - 1 ; i >= 0 ; i--) {
+				File newFolder = new File(expandPath(src) + File.separatorChar + directories.get(i));
+				newFolder.mkdir();
+				src += File.separatorChar + newFolder.getName();
+			}
+			exec.exit_code = Execution.ExitCode.SUCCESS;
+			exec.output = directory.getName() + " was created successfully.\n";
+		}
+		return exec;
+	}
     Execution help(String command) {
     	Execution exec = new Execution();
     	switch(command) {
