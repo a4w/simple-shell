@@ -475,19 +475,23 @@ public class Terminal{
     
     Execution cat(String[] listOfFiles, String userInput){
         Execution exec = new Execution();
+        exec.output = userInput == null ? null : userInput + "\n********************-------------*************************\n";
         if(listOfFiles.length == 0 && userInput == null){
             // Take input
             Scanner sc = new Scanner(System.in);
             String line;
             exec.output = "";
+            exec.exit_code = Execution.ExitCode.SUCCESS ;
             while(sc.hasNextLine()) {
                 line = sc.nextLine();
                 if(line.equals("fml")) break; //down mentally
                 exec.output += line + '\n';
             }
+            exec.output += "\n********************-------------*************************\n";
         }
         if(listOfFiles.length > 0) {
             exec.output = "";
+            exec.exit_code = Execution.ExitCode.SUCCESS ;
             File tempFile;
             String line;
             BufferedReader in;
@@ -505,11 +509,10 @@ public class Terminal{
                     exec.output += "\n********************-------------*************************\n" ;
                     in.close();
                 }catch(IOException e){
-                    System.out.println(e.getMessage());
+                    exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
                 }
             }
         }
-        exec.exit_code = Execution.ExitCode.SUCCESS ;
         return exec;
     }
 };
