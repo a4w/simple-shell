@@ -130,7 +130,7 @@ public class Terminal{
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 break;
             case PRINT_ARGS:
-            	if(args.length == 1)
+                if(args.length == 1)
                     exec = this.args(args[0]);
                 else
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
@@ -141,8 +141,8 @@ public class Terminal{
                 break;
 
             case PIPE:
-            	exec = pipe(args[0], args[1], stdin);
-            	break;
+                exec = pipe(args[0], args[1], stdin);
+                break;
 
             default:
                 exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
@@ -221,10 +221,10 @@ public class Terminal{
                 && Paths.get(expandPath(newPath)).toFile().isDirectory()) {
                 File[] listOfFiles = src.listFiles();
                 for(File f : listOfFiles){
-                	if(f.isFile()) {
-                		dist = new File(newPath + File.separatorChar + f.getName());
-                		copy(oldPath + File.separatorChar + f.getName(), dist);                		
-                	}
+                    if(f.isFile()) {
+                        dist = new File(newPath + File.separatorChar + f.getName());
+                        copy(oldPath + File.separatorChar + f.getName(), dist);                     
+                    }
                 }                               
                 
             }else if(Paths.get(expandPath(oldPath)).toFile().isFile()
@@ -233,9 +233,9 @@ public class Terminal{
                 copy(oldPath, dist);                
                 
             }else{
-            	dist = new File(newPath);
-            	copy(oldPath, dist);
-            	exec.exit_code = Execution.ExitCode.SUCCESS;
+                dist = new File(newPath);
+                copy(oldPath, dist);
+                exec.exit_code = Execution.ExitCode.SUCCESS;
             }
         }catch (Exception e) {
             exec.output = "Please Provide a Valid File name/Directory \n";
@@ -258,14 +258,14 @@ public class Terminal{
     
 }
     Execution mv(String oldPath, String newPath){
-    	Execution exec = new Execution();
-    	if(Paths.get(expandPath(oldPath)).toFile().isDirectory()) {
-    		File[] listOfFiles = Paths.get(expandPath(oldPath)).toFile().listFiles();
-    		for(File f: listOfFiles) {
-    			exec = mv(f.getAbsolutePath(), newPath);
-    			//if(f.isDirectory()) mkdir(newPath + File.separatorChar + f.getName());
-    		}
-    	}
+        Execution exec = new Execution();
+        if(Paths.get(expandPath(oldPath)).toFile().isDirectory()) {
+            File[] listOfFiles = Paths.get(expandPath(oldPath)).toFile().listFiles();
+            for(File f: listOfFiles) {
+                exec = mv(f.getAbsolutePath(), newPath);
+                //if(f.isDirectory()) mkdir(newPath + File.separatorChar + f.getName());
+            }
+        }
         exec = this.cp(oldPath, newPath);
         if(exec.exit_code.equals(Execution.ExitCode.READ_WRITE_ERROR)) return exec;
         File file = new File(expandPath(oldPath));
@@ -373,121 +373,122 @@ public class Terminal{
         return exec;
     }
     Execution help(String command) {
-    	Execution exec = new Execution();
-    	switch(command) {
-    	case "cd":
-    		exec.output = command + " : is used to change the current directory.\n";
-    		break;
-    	case "ls":
-    		exec.output = command + " : is used to list information about the files in the current directory.\n";
-    		break;
-    	case "cp":
-    		exec.output = command + " : is used to copy source to destination, or multiple sources to directory.\n";
-    		break;
-    	case "cat":
-    		exec.output = command + " : is used to concatenate files and print on the standard output.\n";
-    		break;
-    	case "more":
-    		exec.output = command + " : is used to view file or standard input one screenful at a time.\n";
-    		break;
-    	case "mkdir":
-    		exec.output = command + " : allows the user to create directories.\n";
-    		break;
-    	case "rmdir":
-    		exec.output = command + " : removes the directory if it is empty.\n";
-    		break;
-    	case "mv":
-    		exec.output = command + " : used to move or rename files.\n";
-    		break;
-    	case "rm":
-    		exec.output = command + " : removes files or directories.\n";
-    		break;
-    	case "args":
-    		exec.output = command + " : lists all parameters on the command line, number of strings for specific command.\n";
-    		break;
-    	case "date":
-    		exec.output = command + " : displays or sets time.\n";
-    		break;
-    	case "help":
-    		exec.output = command + " : displays what a command does.\n";
-    		break;
-    	case "pwd":
-    		exec.output = command + " : prints name of current directory.\n";
-    		break;
-    	case "clear":
-    		exec.output = command + " : clears the terminal screen.\n";
-    		break;
-    	default:
-    		exec.exit_code = Execution.ExitCode.ERROR;
-    		exec.output = "Command doesn't exist.\n";
-    		return exec;
-    	}
-    	exec.exit_code = Execution.ExitCode.SUCCESS;
-    	return exec;
+        Execution exec = new Execution();
+        switch(command) {
+        case "cd":
+            exec.output = command + " : is used to change the current directory.\n";
+            break;
+        case "ls":
+            exec.output = command + " : is used to list information about the files in the current directory.\n";
+            break;
+        case "cp":
+            exec.output = command + " : is used to copy source to destination, or multiple sources to directory.\n";
+            break;
+        case "cat":
+            exec.output = command + " : is used to concatenate files and print on the standard output.\n";
+            break;
+        case "more":
+            exec.output = command + " : is used to view file or standard input one screenful at a time.\n";
+            break;
+        case "mkdir":
+            exec.output = command + " : allows the user to create directories.\n";
+            break;
+        case "rmdir":
+            exec.output = command + " : removes the directory if it is empty.\n";
+            break;
+        case "mv":
+            exec.output = command + " : used to move or rename files.\n";
+            break;
+        case "rm":
+            exec.output = command + " : removes files or directories.\n";
+            break;
+        case "args":
+            exec.output = command + " : lists all parameters on the command line, number of strings for specific command.\n";
+            break;
+        case "date":
+            exec.output = command + " : displays or sets time.\n";
+            break;
+        case "help":
+            exec.output = command + " : displays what a command does.\n";
+            break;
+        case "pwd":
+            exec.output = command + " : prints name of current directory.\n";
+            break;
+        case "clear":
+            exec.output = command + " : clears the terminal screen.\n";
+            break;
+        default:
+            exec.exit_code = Execution.ExitCode.ERROR;
+            exec.output = "Command doesn't exist.\n";
+            return exec;
+        }
+        exec.exit_code = Execution.ExitCode.SUCCESS;
+        return exec;
     }
     Execution args(String command) {
-    	Execution exec = new Execution();
-    	switch(command) {
-    	case"cd":
-    		exec.output = "arg1 : SourcePath.\n";
-    		break;
-    	case"ls":
-    		exec.output = "arg1 : SourcePath.\n";
-    		break;
-    	case"more":
-    		exec.output = "arg1 : files, arg2 : stdin.\n";
-    		break;
-    	case"mv":
-    		exec.output = "arg1 : SourcePath, arg2 : DestinationPath.\n";
-    		break;
-    	case"clear":
-    		exec.output = "no arguments.\n";
-    		break;
-    	case"rm":
-    		exec.output = "arg1 : SourcePath.\n";
-    		break;
-    	case"date":
-    		exec.output = "no arguments.\n";
-    		break;
-    	case"pwd":
-    		exec.output = "no arguments.\n";
-    		break;
-    	case"cp":
-    		exec.output = "arg1 : SourcePath, arg2 : DestinationPath.\n";
-    		break;
-    	case"cat":
-    		exec.output = "can have 0 or n arguments.\n";
-    		break;
-    	case"rmdir":
-    		exec.output = "arg1 : SourcePath.\n";
-    		break;
-    	case"mkdir":
-    		exec.output = "arg1 : DestinationPath.\n";
-    		break;
-    	case"help":
-    		exec.output = "arg1 : CommandName.\n";
-    		break;
-    	case"args":
-    		exec.output = "arg1 : CommandName.\n";
-    		break;
-    	default:
-    		exec.exit_code = Execution.ExitCode.ERROR;
-    		exec.output = "Command doesn't exist.\n";
-    		return exec;
-    	}
-    	exec.exit_code = Execution.ExitCode.SUCCESS;
-    	return exec;
+        Execution exec = new Execution();
+        switch(command) {
+        case"cd":
+            exec.output = "arg1 : SourcePath.\n";
+            break;
+        case"ls":
+            exec.output = "arg1 : SourcePath.\n";
+            break;
+        case"more":
+            exec.output = "arg1 : files, arg2 : stdin.\n";
+            break;
+        case"mv":
+            exec.output = "arg1 : SourcePath, arg2 : DestinationPath.\n";
+            break;
+        case"clear":
+            exec.output = "no arguments.\n";
+            break;
+        case"rm":
+            exec.output = "arg1 : SourcePath.\n";
+            break;
+        case"date":
+            exec.output = "no arguments.\n";
+            break;
+        case"pwd":
+            exec.output = "no arguments.\n";
+            break;
+        case"cp":
+            exec.output = "arg1 : SourcePath, arg2 : DestinationPath.\n";
+            break;
+        case"cat":
+            exec.output = "can have 0 or n arguments.\n";
+            break;
+        case"rmdir":
+            exec.output = "arg1 : SourcePath.\n";
+            break;
+        case"mkdir":
+            exec.output = "arg1 : DestinationPath.\n";
+            break;
+        case"help":
+            exec.output = "arg1 : CommandName.\n";
+            break;
+        case"args":
+            exec.output = "arg1 : CommandName.\n";
+            break;
+        default:
+            exec.exit_code = Execution.ExitCode.ERROR;
+            exec.output = "Command doesn't exist.\n";
+            return exec;
+        }
+        exec.exit_code = Execution.ExitCode.SUCCESS;
+        return exec;
     }
     
     Execution cat(String[] listOfFiles, String userInput){
         Execution exec = new Execution();
-        exec.output = userInput == null ? null : userInput + "\n********************-------------*************************\n";
+        exec.exit_code = Execution.ExitCode.SUCCESS ;
+        exec.output = userInput == null ? "" : userInput + "\n********************-------------*************************\n";
         if(listOfFiles.length == 0 && userInput == null){
             // Take input
             Scanner sc = new Scanner(System.in);
             String line;
             exec.output = "";
-            exec.exit_code = Execution.ExitCode.SUCCESS ;
+            exec.exit_code = Execution.ExitCode.SUCCESS;
             while(sc.hasNextLine()) {
                 line = sc.nextLine();
                 if(line.equals("fml")) break; //down mentally
@@ -496,7 +497,6 @@ public class Terminal{
             exec.output += "\n********************-------------*************************\n";
         }
         if(listOfFiles.length > 0) {
-            exec.output = "";
             exec.exit_code = Execution.ExitCode.SUCCESS ;
             File tempFile;
             String line;
@@ -522,9 +522,9 @@ public class Terminal{
         return exec;
     }
     Execution pipe(String leftCommand, String rightCommand, String stdin) {
-    	Execution exec = new Execution();
-    	exec = run(leftCommand, stdin);
-    	exec = run(rightCommand, exec.output);
-    	return exec;
+        Execution exec = new Execution();
+        exec = run(leftCommand, stdin);
+        exec = run(rightCommand, exec.output);
+        return exec;
     }
 };
