@@ -106,36 +106,32 @@ public class Terminal{
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 break;
             case PRINT_DATE:
-            	if(args.length != 0)
-            		exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
-            	else
-            		exec = date();
-            	break;
+                if(args.length != 0)
+                    exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+                else
+                    exec = date();
+                break;
             case DELETE_DIR:
-            	if(args.length == 1)
+                if(args.length == 1)
                     exec = this.rmdir(args[0]);
                 else
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 break;
             case CREATE_DIR:
-            	if(args.length == 1)
-            		exec = this.mkdir(args[0]);
-            	else
-            		exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
-            	break;
+                if(args.length == 1)
+                    exec = this.mkdir(args[0]);
+                else
+                    exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+                break;
             case PRINT_HELP:
-            	if(args.length == 1)
+                if(args.length == 1)
                     exec = this.help(args[0]);
                 else
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 break;
             case CONCATENATE:
-            	if(args.length != 0 ) {
-            		exec = cat(args, null);
-            	}else {
-            		exec = cat(args, "");
-            	}
-            	break;
+                exec = cat(args, stdin);
+                break;
             default:
                 exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
                 break;
@@ -208,52 +204,52 @@ public class Terminal{
         File src = new File(oldPath);
         File dist;
         try {
-        	
-        	if(Paths.get(expandPath(oldPath)).toFile().isDirectory()
-        		&& Paths.get(expandPath(newPath)).toFile().isDirectory()) {
-        		File[] listOfFiles = src.listFiles();
-        		for(File f : listOfFiles){
-        			dist = new File(newPath + f.getName());
-        			copy(oldPath + File.separatorChar + f.getName(), dist);
-        		}        		        		
-        		
-        	}else if(Paths.get(expandPath(oldPath)).toFile().isFile()
-        			&& Paths.get(expandPath(newPath)).toFile().isDirectory()) {
-        		dist = new File(newPath + src.getName());
-        		copy(oldPath, dist);        		
-        		
-        	}else if(Paths.get(expandPath(oldPath)).toFile().isFile() 
-        			&& Paths.get(expandPath(newPath)).toFile().isFile()){
-        		
-        		dist = new File(newPath);
-        		dist.createNewFile();
-        		copy(oldPath, dist);
-        		exec.exit_code = Execution.ExitCode.SUCCESS;
-        		exec.output = "File Copied successfully\n";
-        		        		
-        	}else{
-        		exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-        		exec.output = "Path specified is not a valid directory\n";
-        	}
+            
+            if(Paths.get(expandPath(oldPath)).toFile().isDirectory()
+                && Paths.get(expandPath(newPath)).toFile().isDirectory()) {
+                File[] listOfFiles = src.listFiles();
+                for(File f : listOfFiles){
+                    dist = new File(newPath + f.getName());
+                    copy(oldPath + File.separatorChar + f.getName(), dist);
+                }                               
+                
+            }else if(Paths.get(expandPath(oldPath)).toFile().isFile()
+                    && Paths.get(expandPath(newPath)).toFile().isDirectory()) {
+                dist = new File(newPath + src.getName());
+                copy(oldPath, dist);                
+                
+            }else if(Paths.get(expandPath(oldPath)).toFile().isFile() 
+                    && Paths.get(expandPath(newPath)).toFile().isFile()){
+                
+                dist = new File(newPath);
+                dist.createNewFile();
+                copy(oldPath, dist);
+                exec.exit_code = Execution.ExitCode.SUCCESS;
+                exec.output = "File Copied successfully\n";
+                                
+            }else{
+                exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+                exec.output = "Path specified is not a valid directory\n";
+            }
         }catch (Exception e) {
-        	exec.output = "Please Provide a Valid File name/Directory \n";
-    		exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-   		}
+            exec.output = "Please Provide a Valid File name/Directory \n";
+            exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+        }
         return exec;
     }
     void copy(String oldPath, File dist) throws IOException {
-		FileInputStream copyFile = new FileInputStream(expandPath(oldPath));
-		FileOutputStream pasteFile = new FileOutputStream(dist.getAbsolutePath());
-		
-		byte[] buffer = new byte[1024];
-		int length;
-		
-		while ((length = copyFile.read(buffer)) > 0) {
-			pasteFile.write(buffer, 0, length);
-		}
-		copyFile.close();
-		pasteFile.close();    		
-	
+        FileInputStream copyFile = new FileInputStream(expandPath(oldPath));
+        FileOutputStream pasteFile = new FileOutputStream(dist.getAbsolutePath());
+        
+        byte[] buffer = new byte[1024];
+        int length;
+        
+        while ((length = copyFile.read(buffer)) > 0) {
+            pasteFile.write(buffer, 0, length);
+        }
+        copyFile.close();
+        pasteFile.close();          
+    
 }
     Execution mv(String oldPath, String newPath){
         Execution exec = this.cp(oldPath, newPath);
@@ -290,175 +286,169 @@ public class Terminal{
         return exec;
     }
     Execution date() {
-    	Execution exec = new Execution();
-    	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
-    	LocalDateTime now = LocalDateTime.now();  
-		exec.output = dtf.format(now) + '\n';
-		exec.exit_code = Execution.ExitCode.SUCCESS;
-		return exec;
+        Execution exec = new Execution();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+        LocalDateTime now = LocalDateTime.now();  
+        exec.output = dtf.format(now) + '\n';
+        exec.exit_code = Execution.ExitCode.SUCCESS;
+        return exec;
     }
     Execution rmdir(String path) {
-    	Execution exec = new Execution();
-    	if(Paths.get(expandPath(path)).toFile().isDirectory()) {
-    		final File directory = new File(expandPath(path));
-    		try{
-    			delete(directory);
-    			exec.exit_code = Execution.ExitCode.SUCCESS;
-    			exec.output = "";
-    			exec.output += directory.getName() + " was removed Successfully.\n";
-    		}
-    		catch(IOException e){
-    			exec.exit_code = Execution.ExitCode.ERROR;
-    			exec.output = "Directory can't be removed.\n";
-    		}
-    	}
-    	else {
-    		exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+        Execution exec = new Execution();
+        if(Paths.get(expandPath(path)).toFile().isDirectory()) {
+            final File directory = new File(expandPath(path));
+            try{
+                delete(directory);
+                exec.exit_code = Execution.ExitCode.SUCCESS;
+                exec.output = "";
+                exec.output += directory.getName() + " was removed Successfully.\n";
+            }
+            catch(IOException e){
+                exec.exit_code = Execution.ExitCode.ERROR;
+                exec.output = "Directory can't be removed.\n";
+            }
+        }
+        else {
+            exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
             exec.output = "Path specified is not a valid directory.\n";
-    	}
-    	return exec;
+        }
+        return exec;
     }
     public static void delete(File directory) throws IOException{
-    	if(directory.isDirectory()) {
-    		File[] files = directory.listFiles();
-   			for(File file : files)
-    			delete(file);
-   			directory.delete();
-   		}
-   		else if(directory.isFile()) {
-   			directory.delete();
-   		}
-    	else
-    		throw new IOException("error");
+        if(directory.isDirectory()) {
+            File[] files = directory.listFiles();
+            for(File file : files)
+                delete(file);
+            directory.delete();
+        }
+        else if(directory.isFile()) {
+            directory.delete();
+        }
+        else
+            throw new IOException("error");
     }
     Execution mkdir(String path) {
-		Execution exec = new Execution();
-		final File directory = new File(expandPath(path));
-		if(Paths.get(expandPath(path)).toFile().isDirectory()) {
-			exec.exit_code = Execution.ExitCode.ERROR;
-			exec.output = "";
-			exec.output += directory.getName() + " already exists.\n";
-		}
-		else {
-			String src = path;
-			int len = 0;
-			String folder = "";
-			ArrayList<String> directories = new ArrayList<String>();
-			while(!Paths.get(expandPath(src)).toFile().isDirectory() && src.length() != 0) {
-				folder = Paths.get(expandPath(src)).toFile().getName();
-				len += folder.length() + 1;
-				directories.add(folder);
-				src = "";
-	    		for(int i = 0 ; i < path.length() - len ; i++)
-	    			src += path.charAt(i);
-			}
-			for(int i = directories.size() - 1 ; i >= 0 ; i--) {
-				File newFolder = new File(expandPath(src) + File.separatorChar + directories.get(i));
-				newFolder.mkdir();
-				src += File.separatorChar + newFolder.getName();
-			}
-			exec.exit_code = Execution.ExitCode.SUCCESS;
-			exec.output = directory.getName() + " was created successfully.\n";
-		}
-		return exec;
-	}
+        Execution exec = new Execution();
+        final File directory = new File(expandPath(path));
+        if(Paths.get(expandPath(path)).toFile().isDirectory()) {
+            exec.exit_code = Execution.ExitCode.ERROR;
+            exec.output = "";
+            exec.output += directory.getName() + " already exists.\n";
+        }
+        else {
+            String src = path;
+            int len = 0;
+            String folder = "";
+            ArrayList<String> directories = new ArrayList<String>();
+            while(!Paths.get(expandPath(src)).toFile().isDirectory() && src.length() != 0) {
+                folder = Paths.get(expandPath(src)).toFile().getName();
+                len += folder.length() + 1;
+                directories.add(folder);
+                src = "";
+                for(int i = 0 ; i < path.length() - len ; i++)
+                    src += path.charAt(i);
+            }
+            for(int i = directories.size() - 1 ; i >= 0 ; i--) {
+                File newFolder = new File(expandPath(src) + File.separatorChar + directories.get(i));
+                newFolder.mkdir();
+                src += File.separatorChar + newFolder.getName();
+            }
+            exec.exit_code = Execution.ExitCode.SUCCESS;
+            exec.output = directory.getName() + " was created successfully.\n";
+        }
+        return exec;
+    }
     Execution help(String command) {
-    	Execution exec = new Execution();
-    	switch(command) {
-    	case "cd":
-    		exec.output = command + " is used to change the current directory.\n";
-    		break;
-    	case "ls":
-    		exec.output = command + " is used to list information about the files in the current directory.\n";
-    		break;
-    	case "cp":
-    		exec.output = command + " is used to copy source to destination, or multiple sources to directory.\n";
-    		break;
-    	case "cat":
-    		exec.output = command + " is used to concatenate files and print on the standard output.\n";
-    		break;
-    	case "more":
-    		exec.output = command + " is used to view file or standard input one screenful at a time.\n";
-    		break;
-    	case "mkdir":
-    		exec.output = command + " allows the user to create directories.\n";
-    		break;
-    	case "rmdir":
-    		exec.output = command + " removes the directory if it is empty.\n";
-    		break;
-    	case "mv":
-    		exec.output = command + " is used to move or rename files.\n";
-    		break;
-    	case "rm":
-    		exec.output = command + " removes files or directories.\n";
-    		break;
-    	case "args":
-    		exec.output = command + " reads streams of data from standard input, then generates and executes command lines.\n";
-    		break;
-    	case "date":
-    		exec.output = command + " is used to display or set time.\n";
-    		break;
-    	case "help":
-    		exec.output = command + " displays what a command does.\n";
-    		break;
-    	case "pwd":
-    		exec.output = command + " is used to print name of current directory.\n";
-    		break;
-    	case "clear":
-    		exec.output = command + " clears the terminal screen.\n";
-    		break;
-    	default:
-    		exec.exit_code = Execution.ExitCode.ERROR;
-    		exec.output = "Command doesn't exist.\n";
-    		return exec;
-    	}
-    	exec.exit_code = Execution.ExitCode.SUCCESS;
-    	return exec;
+        Execution exec = new Execution();
+        switch(command) {
+        case "cd":
+            exec.output = command + " is used to change the current directory.\n";
+            break;
+        case "ls":
+            exec.output = command + " is used to list information about the files in the current directory.\n";
+            break;
+        case "cp":
+            exec.output = command + " is used to copy source to destination, or multiple sources to directory.\n";
+            break;
+        case "cat":
+            exec.output = command + " is used to concatenate files and print on the standard output.\n";
+            break;
+        case "more":
+            exec.output = command + " is used to view file or standard input one screenful at a time.\n";
+            break;
+        case "mkdir":
+            exec.output = command + " allows the user to create directories.\n";
+            break;
+        case "rmdir":
+            exec.output = command + " removes the directory if it is empty.\n";
+            break;
+        case "mv":
+            exec.output = command + " is used to move or rename files.\n";
+            break;
+        case "rm":
+            exec.output = command + " removes files or directories.\n";
+            break;
+        case "args":
+            exec.output = command + " reads streams of data from standard input, then generates and executes command lines.\n";
+            break;
+        case "date":
+            exec.output = command + " is used to display or set time.\n";
+            break;
+        case "help":
+            exec.output = command + " displays what a command does.\n";
+            break;
+        case "pwd":
+            exec.output = command + " is used to print name of current directory.\n";
+            break;
+        case "clear":
+            exec.output = command + " clears the terminal screen.\n";
+            break;
+        default:
+            exec.exit_code = Execution.ExitCode.ERROR;
+            exec.output = "Command doesn't exist.\n";
+            return exec;
+        }
+        exec.exit_code = Execution.ExitCode.SUCCESS;
+        return exec;
     }
     
     Execution cat(String[] listOfFiles, String userInput){
-    	Execution exec = new Execution();
-    	if(userInput == null) {
-    		exec.output = "";
-    		try {
-    			File tempFile;
-    			String line;
-    			BufferedReader in;
-    			for(int i = 0; i < listOfFiles.length; ++i) {
-    				tempFile = Paths.get(expandPath(listOfFiles[i])).toFile();
-    				if(!tempFile.isFile() || !tempFile.exists() || tempFile.isDirectory()) {
-    					throw new Exception();
-    				}
-    				in = new BufferedReader(new FileReader(tempFile.getAbsolutePath()));
-    				while((line = in.readLine()) != null)
-    					exec.output += line + '\n' ;
-    				exec.output += "\n********************-------------*************************\n" ;
-    				in.close();
-    			}    			
-    		}catch (Exception e) {
-    			exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-    			exec.output = "Please Provide a Valid File name/Directory \n";			
-			}
-    	}else {
-    		Scanner sc = new Scanner(System.in);
+        Execution exec = new Execution();
+        if(listOfFiles.length == 0 && userInput == null){
+            // Take input
+            Scanner sc = new Scanner(System.in);
             String line;
-            
+            exec.output = "";
             while(sc.hasNextLine()) {
-            	line = sc.nextLine();
-            	if(line.equals("fml")) break; //down mentally
-            	userInput += line + '\n';            	            	
+                line = sc.nextLine();
+                if(line.equals("fml")) break; //down mentally
+                exec.output += line + '\n';
             }
-           /* while(!(line = sc.nextLine()).equals("fml")) {
-            	userInput += line + '\n';            	            	
-            }*/
-            /*do {
-            	line = sc.nextLine();
-            	userInput += line + '\n';            	
-            }while (!(line = sc.hasnextLine()).equals("\u001a"));*/
-			sc.close();
-    		exec.output = userInput;
-    	}
-    	exec.exit_code = Execution.ExitCode.SUCCESS ;
-       	return exec;
+        }
+        if(listOfFiles.length > 0) {
+            exec.output = "";
+            File tempFile;
+            String line;
+            BufferedReader in;
+            for(int i = 0; i < listOfFiles.length; ++i) {
+                tempFile = Paths.get(expandPath(listOfFiles[i])).toFile();
+                if(!tempFile.isFile()) {
+                    exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+                    exec.output = "Please Provide a Valid File name/Directory \n";
+                    break;
+                }
+                try{
+                    in = new BufferedReader(new FileReader(tempFile.getAbsolutePath()));
+                    while((line = in.readLine()) != null)
+                        exec.output += line + '\n' ;
+                    exec.output += "\n********************-------------*************************\n" ;
+                    in.close();
+                }catch(IOException e){
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        exec.exit_code = Execution.ExitCode.SUCCESS ;
+        return exec;
     }
 };
