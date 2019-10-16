@@ -203,48 +203,54 @@ public class Terminal{
         
         File src = new File(oldPath);
         File dist;
-                
-        if(newPath.charAt(newPath.length() - 1) == File.separatorChar ) {
-        	///copy file to newPath with the same name
-        	dist = new File(newPath + src.getName());
-        	try {
-				dist.createNewFile();
-			} catch (IOException e) {
-				exec.output = "Please Provide a Valid File Directory\n";
-				exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-				
-			}
-        }else if(Paths.get(expandPath(oldPath)).toFile().isFile() 
-        		&& Paths.get(expandPath(newPath)).toFile().isDirectory()){
+        try {
         	
-            try{
-            	dist = new File(newPath);
-            	dist.createNewFile();
-            	
-            	FileInputStream copyFile = new FileInputStream(expandPath(oldPath));
-            	FileOutputStream pasteFile = new FileOutputStream(dist.getAbsolutePath());
-            	
-                byte[] buffer = new byte[1024];
-                int length;
-                
-                while ((length = copyFile.read(buffer)) > 0) {
-                    pasteFile.write(buffer, 0, length);
-                }
-                exec.exit_code = Execution.ExitCode.SUCCESS;
-                exec.output = "File Copied successfully\n";
-                
-                copyFile.close();
-                pasteFile.close();
-            }catch(IOException e){
-            	exec.output = "Please Provide a Valid File name\n";
-                exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-            }
-        }else{
-            exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-            exec.output = "Path specified is not a valid directory\n";
-        }
+        	if(Paths.get(expandPath(oldPath)).toFile().isDirectory()
+        		&& Paths.get(expandPath(newPath)).toFile().isDirectory()) {
+        		File[] listOfFiles = src.listFiles();
+        		for(File f : listOfFiles){
+        			dist = new File(newPath + f.getName());
+        			copy(oldPath + File.separatorChar + f.getName(), dist);
+        		}        		        		
+        		
+        	}else if(Paths.get(expandPath(oldPath)).toFile().isFile()
+        			&& Paths.get(expandPath(newPath)).toFile().isDirectory()) {
+        		dist = new File(newPath + src.getName());
+        		copy(oldPath, dist);        		
+        		
+        	}else if(Paths.get(expandPath(oldPath)).toFile().isFile() 
+        			&& Paths.get(expandPath(newPath)).toFile().isFile()){
+        		
+        		dist = new File(newPath);
+        		dist.createNewFile();
+        		copy(oldPath, dist);
+        		exec.exit_code = Execution.ExitCode.SUCCESS;
+        		exec.output = "File Copied successfully\n";
+        		        		
+        	}else{
+        		exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+        		exec.output = "Path specified is not a valid directory\n";
+        	}
+        }catch (Exception e) {
+        	exec.output = "Please Provide a Valid File name/Directory \n";
+    		exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+   		}
         return exec;
     }
+    void copy(String oldPath, File dist) throws IOException {
+		FileInputStream copyFile = new FileInputStream(expandPath(oldPath));
+		FileOutputStream pasteFile = new FileOutputStream(dist.getAbsolutePath());
+		
+		byte[] buffer = new byte[1024];
+		int length;
+		
+		while ((length = copyFile.read(buffer)) > 0) {
+			pasteFile.write(buffer, 0, length);
+		}
+		copyFile.close();
+		pasteFile.close();    		
+	
+}
 
     Execution mv(String oldPath, String newPath){
         Execution exec = this.cp(oldPath, newPath);
