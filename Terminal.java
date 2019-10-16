@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public class Terminal{
     final static String _home = System.getProperty("user.dir") + File.separatorChar;
@@ -110,6 +111,18 @@ public class Terminal{
             case DELETE_DIR:
             	if(args.length == 1)
                     exec = this.rmdir(args[0]);
+                else
+                    exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+                break;
+            case CREATE_DIR:
+            	if(args.length == 1)
+            		exec = this.mkdir(args[0]);
+            	else
+            		exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
+            	break;
+            case PRINT_HELP:
+            	if(args.length == 1)
+                    exec = this.help(args[0]);
                 else
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 break;
@@ -283,7 +296,7 @@ public class Terminal{
     			delete(directory);
     			exec.exit_code = Execution.ExitCode.SUCCESS;
     			exec.output = "";
-    			exec.output += directory.getName() + " was removed Successfully.";
+    			exec.output += directory.getName() + " was removed Successfully.\n";
     		}
     		catch(IOException e){
     			exec.exit_code = Execution.ExitCode.ERROR;
@@ -308,5 +321,89 @@ public class Terminal{
    		}
     	else
     		throw new IOException("error");
+    }
+    Execution mkdir(String path) {
+		Execution exec = new Execution();
+		final File directory = new File(expandPath(path));
+		if(Paths.get(expandPath(path)).toFile().isDirectory()) {
+			exec.exit_code = Execution.ExitCode.ERROR;
+			exec.output = "";
+			exec.output += directory.getName() + " already exists.\n";
+		}
+		else {
+			String src = path;
+			int len = 0;
+			String folder = "";
+			ArrayList<String> directories = new ArrayList<String>();
+			while(!Paths.get(expandPath(src)).toFile().isDirectory() && src.length() != 0) {
+				folder = Paths.get(expandPath(src)).toFile().getName();
+				len += folder.length() + 1;
+				directories.add(folder);
+				src = "";
+	    		for(int i = 0 ; i < path.length() - len ; i++)
+	    			src += path.charAt(i);
+			}
+			for(int i = directories.size() - 1 ; i >= 0 ; i--) {
+				File newFolder = new File(expandPath(src) + File.separatorChar + directories.get(i));
+				newFolder.mkdir();
+				src += File.separatorChar + newFolder.getName();
+			}
+			exec.exit_code = Execution.ExitCode.SUCCESS;
+			exec.output = directory.getName() + " was created successfully.\n";
+		}
+		return exec;
+	}
+    Execution help(String command) {
+    	Execution exec = new Execution();
+    	switch(command) {
+    	case "cd":
+    		exec.output = command + " is used to change the current directory.\n";
+    		break;
+    	case "ls":
+    		exec.output = command + " is used to list information about the files in the current directory.\n";
+    		break;
+    	case "cp":
+    		exec.output = command + " is used to copy source to destination, or multiple sources to directory.\n";
+    		break;
+    	case "cat":
+    		exec.output = command + " is used to concatenate files and print on the standard output.\n";
+    		break;
+    	case "more":
+    		exec.output = command + " is used to view file or standard input one screenful at a time.\n";
+    		break;
+    	case "mkdir":
+    		exec.output = command + " allows the user to create directories.\n";
+    		break;
+    	case "rmdir":
+    		exec.output = command + " removes the directory if it is empty.\n";
+    		break;
+    	case "mv":
+    		exec.output = command + " is used to move or rename files.\n";
+    		break;
+    	case "rm":
+    		exec.output = command + " removes files or directories.\n";
+    		break;
+    	case "args":
+    		exec.output = command + " reads streams of data from standard input, then generates and executes command lines.\n";
+    		break;
+    	case "date":
+    		exec.output = command + " is used to display or set time.\n";
+    		break;
+    	case "help":
+    		exec.output = command + " displays what a command does.\n";
+    		break;
+    	case "pwd":
+    		exec.output = command + " is used to print name of current directory.\n";
+    		break;
+    	case "clear":
+    		exec.output = command + " clears the terminal screen.\n";
+    		break;
+    	default:
+    		exec.exit_code = Execution.ExitCode.ERROR;
+    		exec.output = "Command doesn't exist.\n";
+    		return exec;
+    	}
+    	exec.exit_code = Execution.ExitCode.SUCCESS;
+    	return exec;
     }
 };
