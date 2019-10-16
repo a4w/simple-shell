@@ -5,6 +5,9 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 
 public class Terminal{
     final static String _home = System.getProperty("user.dir") + File.separatorChar;
@@ -132,6 +135,15 @@ public class Terminal{
                 else
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 break;
+
+            case CONCATENATE:
+            	if(args.length != 0 ) {
+            		exec = cat(args, null);
+            	}else {
+            		exec = cat(args, "");
+            	}
+            	break;
+
             default:
                 exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
                 break;
@@ -251,7 +263,6 @@ public class Terminal{
 		pasteFile.close();    		
 	
 }
-
     Execution mv(String oldPath, String newPath){
         Execution exec = this.cp(oldPath, newPath);
         if(exec.exit_code.equals(Execution.ExitCode.READ_WRITE_ERROR)) return exec;
@@ -464,5 +475,51 @@ public class Terminal{
     	}
     	exec.exit_code = Execution.ExitCode.SUCCESS;
     	return exec;
+    }
+    
+    Execution cat(String[] listOfFiles, String userInput){
+    	Execution exec = new Execution();
+    	if(userInput == null) {
+    		exec.output = "";
+    		try {
+    			File tempFile;
+    			String line;
+    			BufferedReader in;
+    			for(int i = 0; i < listOfFiles.length; ++i) {
+    				tempFile = Paths.get(expandPath(listOfFiles[i])).toFile();
+    				if(!tempFile.isFile() || !tempFile.exists() || tempFile.isDirectory()) {
+    					throw new Exception();
+    				}
+    				in = new BufferedReader(new FileReader(tempFile.getAbsolutePath()));
+    				while((line = in.readLine()) != null)
+    					exec.output += line + '\n' ;
+    				exec.output += "\n********************-------------*************************\n" ;
+    				in.close();
+    			}    			
+    		}catch (Exception e) {
+    			exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+    			exec.output = "Please Provide a Valid File name/Directory \n";			
+			}
+    	}else {
+    		Scanner sc = new Scanner(System.in);
+            String line;
+            
+            while(sc.hasNextLine()) {
+            	line = sc.nextLine();
+            	if(line.equals("fml")) break; //down mentally
+            	userInput += line + '\n';            	            	
+            }
+           /* while(!(line = sc.nextLine()).equals("fml")) {
+            	userInput += line + '\n';            	            	
+            }*/
+            /*do {
+            	line = sc.nextLine();
+            	userInput += line + '\n';            	
+            }while (!(line = sc.hasnextLine()).equals("\u001a"));*/
+			sc.close();
+    		exec.output = userInput;
+    	}
+    	exec.exit_code = Execution.ExitCode.SUCCESS ;
+       	return exec;
     }
 };
