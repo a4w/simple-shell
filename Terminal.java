@@ -249,7 +249,15 @@ public class Terminal{
     
 }
     Execution mv(String oldPath, String newPath){
-        Execution exec = this.cp(oldPath, newPath);
+    	Execution exec = new Execution();
+    	if(Paths.get(expandPath(oldPath)).toFile().isDirectory()) {
+    		File[] listOfFiles = Paths.get(expandPath(oldPath)).toFile().listFiles();
+    		for(File f: listOfFiles) {
+    			exec = mv(f.getAbsolutePath(), newPath);
+    			//if(f.isDirectory()) mkdir(newPath + File.separatorChar + f.getName());
+    		}
+    	}
+        exec = this.cp(oldPath, newPath);
         if(exec.exit_code.equals(Execution.ExitCode.READ_WRITE_ERROR)) return exec;
         File file = new File(expandPath(oldPath));
         if(file.delete()) {
