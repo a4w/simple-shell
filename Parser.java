@@ -64,18 +64,33 @@ public class Parser{
         	parts.add(current);
         current = "";
         if(pipe != -1){
+            String left = input.substring(0, pipe).trim();
+            String right = input.substring(pipe+1).trim();
+            if(left.length() == 0 || right.length() == 0){
+                return false;
+            }
             this.args = new String[2];
-            this.args[0] = input.substring(0, pipe);
-            this.args[1] = input.substring(pipe+1);
+            this.args[0] = left;
+            this.args[1] = right;
             this.cmd = Command.PIPE;
         }else if(oredirect != Integer.MAX_VALUE || aredirect != Integer.MAX_VALUE){
             // Precendence left to right
             if(oredirect < aredirect){
+                String left = input.substring(0, oredirect).trim();
+                String right = input.substring(oredirect+1).trim();
+                if(left.length() == 0 || right.length() == 0){
+                    return false;
+                }
                 this.args = new String[2];
-                this.args[0] = input.substring(0, oredirect);
-                this.args[1] = input.substring(oredirect+1);
+                this.args[0] = left;
+                this.args[1] = right;
                 this.cmd = Command.OUTPUT_REDIRECT;
             }else if(aredirect < oredirect){
+                String left = input.substring(0, aredirect).trim();
+                String right = input.substring(aredirect+2).trim();
+                if(left.length() == 0 || right.length() == 0){
+                    return false;
+                }
                 this.args = new String[2];
                 this.args[0] = input.substring(0, aredirect);
                 this.args[1] = input.substring(aredirect+2);
