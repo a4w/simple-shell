@@ -140,6 +140,10 @@ public class Terminal{
                 exec = cat(args, stdin);
                 break;
 
+            case PIPE:
+            	exec = pipe(args[0], args[1], stdin);
+            	break;
+
             default:
                 exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
                 break;
@@ -208,36 +212,30 @@ public class Terminal{
     }
     Execution cp(String oldPath, String newPath){
         Execution exec = new Execution ();
-        
-        File src = new File(oldPath);
+        exec.exit_code = Execution.ExitCode.SUCCESS;
+        exec.output = "File Copied successfully\n";
+        File src = Paths.get(expandPath(oldPath)).toFile();
         File dist;
         try {
-            
             if(Paths.get(expandPath(oldPath)).toFile().isDirectory()
                 && Paths.get(expandPath(newPath)).toFile().isDirectory()) {
                 File[] listOfFiles = src.listFiles();
                 for(File f : listOfFiles){
-                    dist = new File(newPath + f.getName());
-                    copy(oldPath + File.separatorChar + f.getName(), dist);
+                	if(f.isFile()) {
+                		dist = new File(newPath + File.separatorChar + f.getName());
+                		copy(oldPath + File.separatorChar + f.getName(), dist);                		
+                	}
                 }                               
                 
             }else if(Paths.get(expandPath(oldPath)).toFile().isFile()
                     && Paths.get(expandPath(newPath)).toFile().isDirectory()) {
-                dist = new File(newPath + src.getName());
+                dist = new File(newPath + File.separatorChar + src.getName());
                 copy(oldPath, dist);                
                 
-            }else if(Paths.get(expandPath(oldPath)).toFile().isFile() 
-                    && Paths.get(expandPath(newPath)).toFile().isFile()){
-                
-                dist = new File(newPath);
-                dist.createNewFile();
-                copy(oldPath, dist);
-                exec.exit_code = Execution.ExitCode.SUCCESS;
-                exec.output = "File Copied successfully\n";
-                                
             }else{
-                exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-                exec.output = "Path specified is not a valid directory\n";
+            	dist = new File(newPath);
+            	copy(oldPath, dist);
+            	exec.exit_code = Execution.ExitCode.SUCCESS;
             }
         }catch (Exception e) {
             exec.output = "Please Provide a Valid File name/Directory \n";
@@ -514,5 +512,11 @@ public class Terminal{
             }
         }
         return exec;
+    }
+    Execution pipe(String leftCommand, String rightCommand, String stdin) {
+    	Execution exec = new Execution();
+    	exec = run(leftCommand, stdin);
+    	exec = run(rightCommand, exec.output);
+    	return exec;
     }
 };
