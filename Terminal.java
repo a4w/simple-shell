@@ -261,7 +261,7 @@ public class Terminal{
         Execution exec = new Execution();
         File file = new File(expandPath(oldPath));
         exec.exit_code = Execution.ExitCode.SUCCESS;
-        if(file.isDirectory()) {
+        if(file.isDirectory() && file.exists()) {
         	newPath = newPath + File.separatorChar + mkdir(newPath + File.separatorChar + file.getName()).output;        	
             File[] listOfFiles = file.listFiles();
             for(File f: listOfFiles) exec = mv(f.getAbsolutePath(), newPath);
