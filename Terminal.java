@@ -256,26 +256,19 @@ public class Terminal{
         copyFile.close();
         pasteFile.close();          
     
-}
+    }
     Execution mv(String oldPath, String newPath){
         Execution exec = new Execution();
-        if(Paths.get(expandPath(oldPath)).toFile().isDirectory()) {
-        	newPath = newPath + File.separatorChar + mkdir(newPath + File.separatorChar + Paths.get(oldPath).toFile().getName()).output;        	
-            File[] listOfFiles = Paths.get(expandPath(oldPath)).toFile().listFiles();
-            for(File f: listOfFiles) {
-                exec = mv(f.getAbsolutePath(), newPath);
-            }
+        File file = new File(expandPath(oldPath));
+        exec.exit_code = Execution.ExitCode.SUCCESS;
+        if(file.isDirectory()) {
+        	newPath = newPath + File.separatorChar + mkdir(newPath + File.separatorChar + file.getName()).output;        	
+            File[] listOfFiles = file.listFiles();
+            for(File f: listOfFiles) exec = mv(f.getAbsolutePath(), newPath);
         }
         exec = this.cp(oldPath, newPath);
         if(exec.exit_code.equals(Execution.ExitCode.READ_WRITE_ERROR)) return exec;
-        File file = new File(expandPath(oldPath));
-        if(file.delete()) {
-            exec.output = "File moved successfully\n";
-            exec.exit_code = Execution.ExitCode.SUCCESS;
-        } else {
-            exec.output = "Failed to move the file\n";
-            exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-        }      	
+        file.delete();
         return exec;
     }
     Execution clear() {
