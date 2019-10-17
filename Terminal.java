@@ -260,10 +260,10 @@ public class Terminal{
     Execution mv(String oldPath, String newPath){
         Execution exec = new Execution();
         if(Paths.get(expandPath(oldPath)).toFile().isDirectory()) {
+        	newPath = newPath + File.separatorChar + mkdir(newPath + File.separatorChar + Paths.get(oldPath).toFile().getName()).output;        	
             File[] listOfFiles = Paths.get(expandPath(oldPath)).toFile().listFiles();
             for(File f: listOfFiles) {
                 exec = mv(f.getAbsolutePath(), newPath);
-                //if(f.isDirectory()) mkdir(newPath + File.separatorChar + f.getName());
             }
         }
         exec = this.cp(oldPath, newPath);
@@ -275,7 +275,7 @@ public class Terminal{
         } else {
             exec.output = "Failed to move the file\n";
             exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-        }
+        }      	
         return exec;
     }
     Execution clear() {
@@ -347,7 +347,7 @@ public class Terminal{
         if(Paths.get(expandPath(path)).toFile().isDirectory()) {
             exec.exit_code = Execution.ExitCode.ERROR;
             exec.output = "";
-            exec.output += directory.getName() + " already exists.\n";
+            exec.output += directory.getName(); //XD
         }
         else {
             String src = path;
@@ -368,7 +368,7 @@ public class Terminal{
                 src += File.separatorChar + newFolder.getName();
             }
             exec.exit_code = Execution.ExitCode.SUCCESS;
-            exec.output = directory.getName() + " was created successfully.\n";
+            exec.output = directory.getName(); //Sorry i need it trimmed
         }
         return exec;
     }
