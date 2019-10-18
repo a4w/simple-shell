@@ -124,13 +124,17 @@ public class Terminal{
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 break;
             case PRINT_HELP:
-                if(args.length == 1)
+            	if(args.length == 0)
+            		exec = this.printHelp();
+            	else if(args.length == 1)
                     exec = this.help(args[0]);
                 else
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
                 break;
             case PRINT_ARGS:
-                if(args.length == 1)
+            	if(args.length == 0)
+            		exec = this.printArgs();
+            	else if(args.length == 1)
                     exec = this.args(args[0]);
                 else
                     exec.exit_code = Execution.ExitCode.INVALID_ARGUMENTS;
@@ -377,53 +381,81 @@ public class Terminal{
         switch(command) {
         case "cd":
             exec.output = command + " : is used to change the current directory.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "ls":
             exec.output = command + " : is used to list information about the files in the current directory.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "cp":
             exec.output = command + " : is used to copy source to destination, or multiple sources to directory.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "cat":
             exec.output = command + " : is used to concatenate files and print on the standard output.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "more":
             exec.output = command + " : is used to view file or standard input one screenful at a time.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "mkdir":
             exec.output = command + " : allows the user to create directories.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "rmdir":
             exec.output = command + " : removes the directory if it is empty.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "mv":
             exec.output = command + " : used to move or rename files.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "rm":
             exec.output = command + " : removes files or directories.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "args":
             exec.output = command + " : lists all parameters on the command line, number of strings for specific command.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "date":
             exec.output = command + " : displays or sets time.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "help":
             exec.output = command + " : displays what a command does.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "pwd":
             exec.output = command + " : prints name of current directory.\n";
+            exec.output += "	Its arguments = " + args(command).output;
             break;
         case "clear":
             exec.output = command + " : clears the terminal screen.\n";
+            exec.output += "	Its arguments = " + args(command).output;
+            break;
+        case "":
+            printHelp();
             break;
         default:
             exec.exit_code = Execution.ExitCode.ERROR;
-            exec.output = "Command doesn't exist.\n";
+            exec.output = command + " command doesn't exist.\n";
             return exec;
         }
         exec.exit_code = Execution.ExitCode.SUCCESS;
         return exec;
+    }
+    
+    Execution printHelp()
+    {
+    	Execution exec = new Execution();
+    	String[] commands = {"cd" , "ls" , "cp" , "cat" , "more" , "mkdir" , "rmdir" , "mv" , "rm" , "args" , "date" , "help" , "pwd" , "clear"}; 
+    	exec.output = "";
+    	for(int i = 0 ; i < commands.length ; i++)
+    		exec.output += this.help(commands[i]).output;
+    	exec.exit_code = Execution.ExitCode.SUCCESS;
+    	return exec;
     }
     Execution args(String command) {
         Execution exec = new Execution();
@@ -441,16 +473,16 @@ public class Terminal{
             exec.output = "arg1 : SourcePath, arg2 : DestinationPath.\n";
             break;
         case"clear":
-            exec.output = "no arguments.\n";
+            exec.output = "has no arguments.\n";
             break;
         case"rm":
             exec.output = "arg1 : SourcePath.\n";
             break;
         case"date":
-            exec.output = "no arguments.\n";
+            exec.output = "has no arguments.\n";
             break;
         case"pwd":
-            exec.output = "no arguments.\n";
+            exec.output = "has no arguments.\n";
             break;
         case"cp":
             exec.output = "arg1 : SourcePath, arg2 : DestinationPath.\n";
@@ -470,15 +502,27 @@ public class Terminal{
         case"args":
             exec.output = "arg1 : CommandName.\n";
             break;
+        case "":
+            printArgs();
+            break;
         default:
             exec.exit_code = Execution.ExitCode.ERROR;
-            exec.output = "Command doesn't exist.\n";
+            exec.output = command + " command doesn't exist.\n";
             return exec;
         }
         exec.exit_code = Execution.ExitCode.SUCCESS;
         return exec;
     }
-    
+    Execution printArgs()
+    {
+    	Execution exec = new Execution();
+    	String[] commands = {"cd" , "ls" , "cp" , "cat" , "more" , "mkdir" , "rmdir" , "mv" , "rm" , "args" , "date" , "help" , "pwd" , "clear"}; 
+    	exec.output = "";
+    	for(int i = 0 ; i < commands.length ; i++)
+    		exec.output += commands[i] + " : " + this.args(commands[i]).output;
+    	exec.exit_code = Execution.ExitCode.SUCCESS;
+    	return exec;
+    }
     Execution cat(String[] listOfFiles, String userInput){
         Execution exec = new Execution();
         exec.exit_code = Execution.ExitCode.SUCCESS ;
