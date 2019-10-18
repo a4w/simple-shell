@@ -260,26 +260,19 @@ public class Terminal{
         copyFile.close();
         pasteFile.close();          
     
-}
+    }
     Execution mv(String oldPath, String newPath){
         Execution exec = new Execution();
-        if(Paths.get(expandPath(oldPath)).toFile().isDirectory()) {
-            File[] listOfFiles = Paths.get(expandPath(oldPath)).toFile().listFiles();
-            for(File f: listOfFiles) {
-                exec = mv(f.getAbsolutePath(), newPath);
-                //if(f.isDirectory()) mkdir(newPath + File.separatorChar + f.getName());
-            }
+        File file = new File(expandPath(oldPath));
+        exec.exit_code = Execution.ExitCode.SUCCESS;
+        if(file.isDirectory() && file.exists()) {
+        	newPath = newPath + File.separatorChar + mkdir(newPath + File.separatorChar + file.getName()).output;        	
+            File[] listOfFiles = file.listFiles();
+            for(File f: listOfFiles) exec = mv(f.getAbsolutePath(), newPath);
         }
         exec = this.cp(oldPath, newPath);
         if(exec.exit_code.equals(Execution.ExitCode.READ_WRITE_ERROR)) return exec;
-        File file = new File(expandPath(oldPath));
-        if(file.delete()) {
-            exec.output = "File moved successfully\n";
-            exec.exit_code = Execution.ExitCode.SUCCESS;
-        } else {
-            exec.output = "Failed to move the file\n";
-            exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
-        }
+        file.delete();
         return exec;
     }
     Execution clear() {
@@ -351,7 +344,7 @@ public class Terminal{
         if(Paths.get(expandPath(path)).toFile().isDirectory()) {
             exec.exit_code = Execution.ExitCode.ERROR;
             exec.output = "";
-            exec.output += directory.getName() + " already exists.\n";
+            exec.output += directory.getName(); //XD
         }
         else {
             String src = path;
@@ -372,7 +365,7 @@ public class Terminal{
                 src += File.separatorChar + newFolder.getName();
             }
             exec.exit_code = Execution.ExitCode.SUCCESS;
-            exec.output = directory.getName() + " was created successfully.\n";
+            exec.output = directory.getName(); //Sorry i need it trimmed
         }
         return exec;
     }
