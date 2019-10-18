@@ -305,6 +305,27 @@ public class Terminal{
         return exec;
     }
     Execution rmdir(String path) {
+    	Execution exec = new Execution();
+    	if(Paths.get(expandPath(path)).toFile().isDirectory()) {
+    		final File directory = new File(expandPath(path));
+    		if(directory.list().length > 0)
+    			exec.output = "Directory can't be removed.\n";
+    		else
+    		{
+    			directory.delete();
+    			exec.output = "Directory was deleted successfully.\n";
+    		}
+    	}
+    	else
+    	{
+    		exec.output = "The specified path is not a valid directory.\n";
+    		exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
+    		return exec;
+    	}
+    	exec.exit_code = Execution.ExitCode.SUCCESS;
+    	return exec;
+    }
+    /*Execution rmdir(String path) {
         Execution exec = new Execution();
         if(Paths.get(expandPath(path)).toFile().isDirectory()) {
             final File directory = new File(expandPath(path));
@@ -312,7 +333,7 @@ public class Terminal{
                 delete(directory);
                 exec.exit_code = Execution.ExitCode.SUCCESS;
                 exec.output = "";
-                exec.output += "Directory was removed Successfully.\n";
+                //exec.output += "Done Successfully.\n";
             }
             catch(IOException e){
                 exec.exit_code = Execution.ExitCode.ERROR;
@@ -329,18 +350,18 @@ public class Terminal{
         if(directory.isDirectory()) {
             File[] folders = directory.listFiles();
             for(File folder : folders) {
-            	if(folder.length() == 0)
+            	if(folder.list().length == 0)
             		delete(folder);
             }
             directory.delete();
         }
         else if(directory.isFile()) {
-            if(directory.length() == 0)
+            if(directory.list().length == 0)
             	directory.delete();
         }
         else
             throw new IOException("error");
-    }
+    }*/
     Execution mkdir(String path) {
         Execution exec = new Execution();
         final File directory = new File(expandPath(path));
