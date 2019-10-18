@@ -312,7 +312,7 @@ public class Terminal{
                 delete(directory);
                 exec.exit_code = Execution.ExitCode.SUCCESS;
                 exec.output = "";
-                exec.output += directory.getName() + " was removed Successfully.\n";
+                exec.output += "Directory was removed Successfully.\n";
             }
             catch(IOException e){
                 exec.exit_code = Execution.ExitCode.ERROR;
@@ -327,13 +327,16 @@ public class Terminal{
     }
     public static void delete(File directory) throws IOException{
         if(directory.isDirectory()) {
-            File[] files = directory.listFiles();
-            for(File file : files)
-                delete(file);
+            File[] folders = directory.listFiles();
+            for(File folder : folders) {
+            	if(folder.length() == 0)
+            		delete(folder);
+            }
             directory.delete();
         }
         else if(directory.isFile()) {
-            directory.delete();
+            if(directory.length() == 0)
+            	directory.delete();
         }
         else
             throw new IOException("error");
@@ -345,6 +348,7 @@ public class Terminal{
             exec.exit_code = Execution.ExitCode.ERROR;
             exec.output = "";
             exec.output += directory.getName(); //XD
+            //System.out.println(" already exists.\n");
         }
         else {
             String src = path;
@@ -366,6 +370,7 @@ public class Terminal{
             }
             exec.exit_code = Execution.ExitCode.SUCCESS;
             exec.output = directory.getName(); //Sorry i need it trimmed
+            //System.out.println(" was created successfully.\n");
         }
         return exec;
     }
