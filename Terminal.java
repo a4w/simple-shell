@@ -552,8 +552,7 @@ public class Terminal {
     Execution cat(String[] listOfFiles, String userInput) {
         Execution exec = new Execution();
         exec.exit_code = Execution.ExitCode.SUCCESS;
-        exec.output = userInput == null ? ""
-                : userInput + "\n********************-------------*************************\n";
+        exec.output = userInput == null ? "" : userInput;
         if (listOfFiles.length == 0 && userInput == null) {
             // Take input
             Scanner sc = new Scanner(System.in);
@@ -566,7 +565,6 @@ public class Terminal {
                     break; // down mentally
                 exec.output += line + '\n';
             }
-            exec.output += "\n********************-------------*************************\n";
         }
         if (listOfFiles.length > 0) {
             exec.exit_code = Execution.ExitCode.SUCCESS;
@@ -584,7 +582,6 @@ public class Terminal {
                     in = new BufferedReader(new FileReader(tempFile.getAbsolutePath()));
                     while ((line = in.readLine()) != null)
                         exec.output += line + '\n';
-                    exec.output += "\n********************-------------*************************\n";
                     in.close();
                 } catch (IOException e) {
                     exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
