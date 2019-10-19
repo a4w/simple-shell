@@ -155,6 +155,9 @@ public class Terminal {
         case OUTPUT_REDIRECT_APPEND:
             exec = append(args[0], args[1], stdin);
             break;
+        case NONE:
+            exec.exit_code = Execution.ExitCode.SUCCESS;
+            break;
         default:
             exec.exit_code = Execution.ExitCode.COMMAND_NOT_FOUND;
             break;
@@ -310,8 +313,7 @@ public class Terminal {
         if (Paths.get(expandPath(path)).toFile().isFile()) {
             final File file = new File(expandPath(path));
             exec.exit_code = Execution.ExitCode.SUCCESS;
-            exec.output = "";
-            exec.output += file.getName() + " was removed successfully.\n";
+            exec.output = file.getName() + " was removed successfully.\n";
             file.delete();
         } else {
             exec.exit_code = Execution.ExitCode.READ_WRITE_ERROR;
@@ -366,11 +368,9 @@ public class Terminal {
     Execution mkdir(String path) {
         Execution exec = new Execution();
         final File directory = new File(expandPath(path));
-        if (Paths.get(expandPath(path)).toFile().isDirectory()) {
+        if (directory.isDirectory()) {
             exec.exit_code = Execution.ExitCode.ERROR;
-            exec.output = "";
-            exec.output += directory.getName(); // XD
-            // System.out.println(" already exists.\n");
+            exec.output = "Directory already exits\n";
         } else {
             String src = path;
             int len = 0;
@@ -390,8 +390,6 @@ public class Terminal {
                 src += File.separatorChar + newFolder.getName();
             }
             exec.exit_code = Execution.ExitCode.SUCCESS;
-            exec.output = directory.getName(); // Sorry i need it trimmed
-            // System.out.println(" was created successfully.\n");
         }
         return exec;
     }
