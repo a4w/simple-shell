@@ -206,11 +206,12 @@ public class Terminal {
         int curr = 0;
         String[] lines = output.split("\n");
         Scanner sc = new Scanner(System.in);
-        while (sc.hasNextLine() && curr < lines.length) {
-            sc.nextLine();
+        while (curr< lines.length) {
             for (int i = 0; i < page_size && curr < lines.length; ++i, ++curr) {
                 System.out.println(lines[curr]);
             }
+            System.out.flush();
+            sc.nextLine();
         }
         return exec;
     }
