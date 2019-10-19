@@ -92,8 +92,8 @@ public class Parser{
                     return false;
                 }
                 this.args = new String[2];
-                this.args[0] = input.substring(0, aredirect);
-                this.args[1] = input.substring(aredirect+2);
+                this.args[0] = left;
+                this.args[1] = right;
                 this.cmd = Command.OUTPUT_REDIRECT_APPEND;
             }
         }else{
