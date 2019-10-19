@@ -238,26 +238,13 @@ public class Terminal {
         exec.exit_code = Execution.ExitCode.SUCCESS;
         exec.output = "File Copied successfully\n";
         File src = Paths.get(expandPath(oldPath)).toFile();
-        File dist;
+        File dst = Paths.get(expandPath(newPath)).toFile();
         try {
-            if (Paths.get(expandPath(oldPath)).toFile().isDirectory()
-                    && Paths.get(expandPath(newPath)).toFile().isDirectory()) {
-                File[] listOfFiles = src.listFiles();
-                for (File f : listOfFiles) {
-                    if (f.isFile()) {
-                        dist = new File(newPath + File.separatorChar + f.getName());
-                        copy(oldPath + File.separatorChar + f.getName(), dist);
-                    }
-                }
-
-            } else if (Paths.get(expandPath(oldPath)).toFile().isFile()
-                    && Paths.get(expandPath(newPath)).toFile().isDirectory()) {
-                dist = new File(newPath + File.separatorChar + src.getName());
-                copy(oldPath, dist);
-
+           if (src.isFile() && dst.isDirectory()) {
+                dst = new File(expandPath(newPath + File.separatorChar + src.getName()));
+                copy(oldPath, dst);
             } else {
-                dist = new File(newPath);
-                copy(oldPath, dist);
+                copy(oldPath, dst);
                 exec.exit_code = Execution.ExitCode.SUCCESS;
             }
         } catch (Exception e) {
