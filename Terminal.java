@@ -175,11 +175,11 @@ public class Terminal{
     }
 
     Execution more(String[] files, String stdin){
-        final String bufferSeparator = "\n*********************************************\n*********************EOF*********************\n*********************************************\n\n";
+        final String bufferSeparator = "*********************EOF*********************";
         Execution exec = new Execution();
         exec.exit_code = Execution.ExitCode.SUCCESS;
         // Show stdin, then files one by one
-        exec.output = stdin == null ? "" : stdin + bufferSeparator;
+        String output =  stdin == null ? "" : stdin + bufferSeparator;
         for(int i = 0; i < files.length; ++i){
             Path f = Paths.get(expandPath(files[i]));
             if(!f.toFile().exists() || !f.toFile().isFile()){
@@ -188,11 +188,21 @@ public class Terminal{
                 break;
             }
             try{
-                exec.output += new String(Files.readAllBytes(f));
-                exec.output += bufferSeparator;
+                output += new String(Files.readAllBytes(f));
+                output += bufferSeparator;
             }catch(IOException e){
                 exec.exit_code = Execution.ExitCode.ERROR;
                 break;
+            }
+        }
+        final int page_size = 10;
+        int curr = 0;
+        String[] lines = output.split("\n");
+        Scanner sc = new Scanner(System.in);
+        while(sc.hasNextLine() && curr < lines.length){
+            sc.nextLine();
+            for(int i = 0; i < page_size && curr < lines.length; ++i, ++curr){
+                System.out.println(lines[curr]);
             }
         }
         return exec;
