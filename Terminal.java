@@ -281,16 +281,19 @@ public class Terminal {
                 dst = new File(expandPath(dst.getAbsolutePath() + File.separatorChar + src.getName()));
             }
             dst.mkdirs();
-            for (File f : listOfFiles)
+            for (File f : listOfFiles){
                 exec = mv(f.getAbsolutePath(), dst.getAbsolutePath());
-            this.rmdir(src.getAbsolutePath());
+                if(exec.exit_code != Execution.ExitCode.SUCCESS){
+                    return exec;
+                }
+            }
         }else{
             // Source is a file
             exec = this.cp(src.getAbsolutePath(), dst.getAbsolutePath());
             if (exec.exit_code.equals(Execution.ExitCode.READ_WRITE_ERROR))
                 return exec;
-            src.delete();
         }
+        src.delete();
         return exec;
     }
 
