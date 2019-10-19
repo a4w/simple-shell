@@ -272,18 +272,25 @@ public class Terminal {
 
     Execution mv(String oldPath, String newPath) {
         Execution exec = new Execution();
-        File file = new File(expandPath(oldPath));
+        File src = new File(expandPath(oldPath)); 
+        File dst = new File(expandPath(newPath)); 
         exec.exit_code = Execution.ExitCode.SUCCESS;
-        if (file.isDirectory() && file.exists()) {
-            newPath = newPath + File.separatorChar + mkdir(newPath + File.separatorChar + file.getName()).output;
-            File[] listOfFiles = file.listFiles();
+        if (src.isDirectory()){
+            File[] listOfFiles = src.listFiles();
+            if(dst.exists()){
+                dst = new File(expandPath(dst.getAbsolutePath() + File.separatorChar + src.getName()));
+            }
+            dst.mkdirs();
             for (File f : listOfFiles)
-                exec = mv(f.getAbsolutePath(), newPath);
+                exec = mv(f.getAbsolutePath(), dst.getAbsolutePath());
+            this.rmdir(src.getAbsolutePath());
+        }else{
+            // Source is a file
+            exec = this.cp(src.getAbsolutePath(), dst.getAbsolutePath());
+            if (exec.exit_code.equals(Execution.ExitCode.READ_WRITE_ERROR))
+                return exec;
+            src.delete();
         }
-        exec = this.cp(oldPath, newPath);
-        if (exec.exit_code.equals(Execution.ExitCode.READ_WRITE_ERROR))
-            return exec;
-        file.delete();
         return exec;
     }
 
