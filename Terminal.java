@@ -208,7 +208,7 @@ public class Terminal {
         Scanner sc = new Scanner(System.in);
         while (curr< lines.length) {
             for (int i = 0; i < page_size && curr < lines.length; ++i, ++curr) {
-                System.out.println(lines[curr]);
+                System.out.println(String.valueOf(curr+1) + '\t' + lines[curr]);
             }
             System.out.flush();
             sc.nextLine();
