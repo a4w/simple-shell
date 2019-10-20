@@ -1,10 +1,15 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 
@@ -372,23 +377,26 @@ public class Terminal {
             exec.exit_code = Execution.ExitCode.ERROR;
             exec.output = "Directory already exits\n";
         } else {
-            String src = path;
-            int len = 0;
-            String folder = "";
-            ArrayList<String> directories = new ArrayList<String>();
-            while (!Paths.get(expandPath(src)).toFile().isDirectory() && src.length() != 0) {
-                folder = Paths.get(expandPath(src)).toFile().getName();
-                len += folder.length() + 1;
-                directories.add(folder);
-                src = "";
-                for (int i = 0; i < path.length() - len; i++)
-                    src += path.charAt(i);
-            }
-            for (int i = directories.size() - 1; i >= 0; i--) {
-                File newFolder = new File(expandPath(src) + File.separatorChar + directories.get(i));
-                newFolder.mkdir();
-                src += File.separatorChar + newFolder.getName();
-            }
+            /*
+             *String src = path;
+             *int len = 0;
+             *String folder = "";
+             *ArrayList<String> directories = new ArrayList<String>();
+             *while (!Paths.get(expandPath(src)).toFile().isDirectory() && src.length() != 0) {
+             *    folder = Paths.get(expandPath(src)).toFile().getName();
+             *    len += folder.length() + 1;
+             *    directories.add(folder);
+             *    src = "";
+             *    for (int i = 0; i < path.length() - len; i++)
+             *        src += path.charAt(i);
+             *}
+             *for (int i = directories.size() - 1; i >= 0; i--) {
+             *    File newFolder = new File(expandPath(src) + File.separatorChar + directories.get(i));
+             *    newFolder.mkdir();
+             *    src += File.separatorChar + newFolder.getName();
+             *}
+             */
+            directory.mkdirs();
             exec.exit_code = Execution.ExitCode.SUCCESS;
         }
         return exec;
