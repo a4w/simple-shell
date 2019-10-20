@@ -29,7 +29,7 @@ public class Parser{
                 if(escape != null && input.charAt(i) == escape){
                     escape = null;
                     if(!current.equals("")) 
-                    	parts.add(current);
+                        parts.add(current);
                     current = "";
                 }else if(escape != null){
                     current += input.charAt(i);
@@ -42,7 +42,7 @@ public class Parser{
                 // Word boundaries are <Space>, "|", ">", ">>"
                 if(input.charAt(i) == ' '){
                     if(!current.equals("")) 
-                    	parts.add(current);
+                        parts.add(current);
                     current = "";
                 }else if(input.charAt(i) == '|'){
                     pipe = i;
@@ -52,16 +52,15 @@ public class Parser{
                         aredirect = i;
                     else
                         oredirect = i;
-                    break;
                 }else{
                     current += input.charAt(i);
                 }
             }
         }
         if(escape != null)
-        	return false;
+            return false;
         if(!current.equals("")) 
-        	parts.add(current);
+            parts.add(current);
         current = "";
         if(pipe != -1){
             String left = input.substring(0, pipe).trim();
@@ -102,7 +101,7 @@ public class Parser{
             this.args = new String[parts.size() - 1];
             
             for(int i = 1; i < parts.size(); ++i)
-            	this.args[i-1] = parts.get(i);
+                this.args[i-1] = parts.get(i);
 
             switch(parts.get(0)){
                 case "cp":
