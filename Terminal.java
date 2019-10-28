@@ -309,7 +309,6 @@ public class Terminal {
         Execution exec = new Execution();
         exec.exit_code = Execution.ExitCode.SUCCESS;
         exec.output = new String(new char[1000]).replace('\0', '\n');
-        ;
         return exec;
     }
 
